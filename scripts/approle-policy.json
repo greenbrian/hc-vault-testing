@@ -1,0 +1,1 @@
+{"rules":"path \"secret/waycoolapp\" {\n  capabilities = [\"read\"]\n}"}

@@ -10,6 +10,9 @@ curl -X POST \
      -d '{"type":"approle"}' \
      http://127.0.0.1:8200/v1/sys/auth/approle
 
+
+
+
 echo "Writing our application secrets..."
 curl -X POST \
      -H "X-Vault-Token:$VAULT_TOKEN" \
@@ -17,11 +20,17 @@ curl -X POST \
      http://127.0.0.1:8200/v1/secret/waycoolapp \
      -d '{"name":"Burns, Charles Montgomery", "ssn": "000-00-0002"}'
 
+
+
+
 echo "Creating policy for AppRole..."
 curl -X POST \
      -H "X-Vault-Token:$VAULT_TOKEN" \
      http://127.0.0.1:8200/v1/sys/policy/waycoolapp \
      	-d '{"rules":"path \"secret/waycoolapp\" {\n  capabilities = [\"read\"]\n}"}'
+
+
+
 
 echo "Creating AppRole..."
 curl -X POST \
@@ -30,8 +39,48 @@ curl -X POST \
      http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp
 
 
+
+
+echo "Read role_id for waycoolapp AppRole..."
+curl -X GET \
+     --silent \
+     -H "X-Vault-Token:$VAULT_TOKEN" \
+     -H "Content-Type: application/json" \
+     http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp/role-id | jq
+
+
+
+
+echo "Save role_id to file..."
+curl -X GET \
+     --silent \
+     -H "X-Vault-Token:$VAULT_TOKEN" \
+     -H "Content-Type: application/json" \
+     http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp/role-id | jq --raw-output '.data.role_id' > /tmp/role_id
+
+
+
+
+
+echo "Retrieving secret_id for waycoolapp AppRole..."
+curl -X POST \
+     --silent \
+     -H "X-Vault-Token:$VAULT_TOKEN" \
+     http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp/secret-id | jq
+
+
+printf "Save secret_id to file..." "$divider"
+curl -X POST \
+     --silent \
+     -H "X-Vault-Token:$VAULT_TOKEN" \
+     http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp/secret-id | jq --raw-output '.data.secret_id' > /tmp/secret_id
+
+
+printf "\n\n"
+echo "###############################"
 echo "AppRole configuration complete!"
 echo "###############################"
+printf "\n\n"
 
 echo "Listing application secrets..."
 curl -X GET \
@@ -40,12 +89,14 @@ curl -X GET \
      -H "Content-Type: application/json" \
      http://127.0.0.1:8200/v1/secret/waycoolapp | jq
 
+
 echo "Listing policies for waycoolapp..."
 curl -X GET \
      --silent \
      -H "X-Vault-Token:$VAULT_TOKEN" \
      -H "Content-Type: application/json" \
      http://127.0.0.1:8200/v1/sys/policy/waycoolapp | jq
+
 
 # read out using CLI
 

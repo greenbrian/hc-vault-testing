@@ -8,6 +8,6 @@ echo "#######################"
 echo "Restarting Vault now..."
 sudo service vault restart
 
-sleep 10
+sleep 5
 
 bash /vagrant/scripts/vault-init.sh

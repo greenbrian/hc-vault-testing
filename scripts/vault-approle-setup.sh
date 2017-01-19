@@ -11,8 +11,6 @@ curl -X POST \
      http://127.0.0.1:8200/v1/sys/auth/approle
 
 
-
-
 echo "Writing our application secrets..."
 curl -X POST \
      -H "X-Vault-Token:$VAULT_TOKEN" \
@@ -21,24 +19,23 @@ curl -X POST \
      -d '{"name":"Burns, Charles Montgomery", "ssn": "000-00-0002"}'
 
 
-
-
 echo "Creating policy for AppRole..."
 curl -X POST \
      -H "X-Vault-Token:$VAULT_TOKEN" \
      http://127.0.0.1:8200/v1/sys/policy/waycoolapp \
-     	-d '{"rules":"path \"secret/waycoolapp\" {\n  capabilities = [\"read\"]\n}"}'
+      -d '{"rules":"path \"secret/waycoolapp\" {\n capabilities = [\"read\"]\n} \npath \"auth/token/renew\" {\n capabilities = [\"update\"]\n} \npath \"auth/token/lookup-accessor\" {\n capabilities = [\"update\"]\n} \npath \"auth/token/lookup\" {\n capabilities = [\"read\"]\n}"}'
 
+#     	-d '{"rules":"path \"secret/waycoolapp\" {\n  capabilities = [\"read\"]\n}"}'
+#      -d '{"rules":"path \"mysql/creds/todo\" {policy=\"read\"}"}'
+#      -d '{"rules":"path \"secret/waycoolapp\" {\n  capabilities = [\"read\"]\n}"}'
 
-
+# {"rules":"path secret/waycoolapp\" {\n  capabilities = [\"read\"]\n} \n path \"auth/token/renew/*\" {\n capabilities = [\"create\", \"read\", \"update\", \"delete\", \"list\"]}\"}'
 
 echo "Creating AppRole..."
 curl -X POST \
      -H "X-Vault-Token:$VAULT_TOKEN" \
-     -d '{"policies":"waycoolapp","secret_id_num_uses":"1000","secret_id_ttl":"60","token_ttl":"5m","token_max_ttl":"10m"}' \
+     -d '{"policies":"waycoolapp","secret_id_num_uses":"1000","secret_id_ttl":"3600","token_ttl":"5m","token_max_ttl":"10m"}' \
      http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp
-
-
 
 
 echo "Read role_id for waycoolapp AppRole..."
@@ -47,8 +44,6 @@ curl -X GET \
      -H "X-Vault-Token:$VAULT_TOKEN" \
      -H "Content-Type: application/json" \
      http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp/role-id | jq
-
-
 
 
 echo "Save role_id to file..."

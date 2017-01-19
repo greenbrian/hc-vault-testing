@@ -12,7 +12,7 @@ This is a minimal environment without high availability or TLS enabled purely to
 
 # Process
 
-To bring up the Ubuntu machine you can use the regex method:
+To bring up the Ubuntu vm
 
     vagrant up
 
@@ -29,6 +29,43 @@ Scripts used in this repository
     ./vault-cleanup.sh         # restarts and reinitializes Vault, clears artifacts - startover from scratch
 
 ### Usage
+
+
+### Token management script logic
+
+
+```
+                         +----------------+
+                         | does token and |
+                         | token_accessor |
+                         | exist?         |
+                         +----------------+
+           +-----+               |            +----+
+           | yes | <------------------------> | no |
+           +-----+                            +----+
+              |                                  |
+              v                                  |
+                                                 |
+     +---------------+                           |
+     | Is the token  |                           |
+     | still valid?  |                           |
+     |               |                           v
+     +---------------+
+                |                     +-------------------------+
+                |                     | use role_id + secret_id |
+     +-----+    |      +----+         | to fetch new token and  |
+     | yes | <-------> | no +-------> | token_accessor          |
+     +-----+           +----+         +-------------------------+
+        |                                     |
+        |                                     |
+        v                                     v
+
+     +--------------------------------------------+
+     |  Get creation_ttl + current ttl and sleep  |
+     |  for (creation_ttl/ttl)/2 and then trigger |
+     |  token renewal. Rinse & repeat.            |
+     +--------------------------------------------+
+```
 
 #### AppRole pull configuration
 

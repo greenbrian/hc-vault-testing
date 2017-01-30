@@ -23,7 +23,7 @@ One of Vault's use cases is to obtain secrets for use within an application on a
 
 ### Overview
 
-The below are end to end steps on using AppRole for managing your secret introduction. This is not
+The below are end to end steps on using AppRole for managing your secret introduction. This process is flexible and open to various interpretations based on environment constraints, and various tools used.
 
 1. Enable AppRole on Vault
 2. Write secrets

@@ -10,11 +10,6 @@ The Vagrantfile can spin up a single node running Vault with a simple example ap
 
 This is a minimal environment without high availability or TLS enabled purely to test Vault AppRole functionality for managing the initial secret (token) introduction.
 
-# Process
-
-To bring up the Ubuntu vm
-
-    vagrant up
 
 ## Vault AppRole Testing
 
@@ -23,7 +18,7 @@ One of Vault's use cases is to obtain secrets for use within an application on a
 
 ### Overview
 
-The below are end to end steps on using AppRole for managing your secret introduction. This process is flexible and open to various interpretations based on environment constraints, and various tools used.
+The below are end to end steps on using AppRole (pull method) for managing your secret introduction. This process is flexible and open to various interpretations based on environment constraints, and various tools used.
 
 1. Enable AppRole on Vault
 2. Write secrets
@@ -49,6 +44,22 @@ Scripts used in this repository
 
 ### Usage
 
+To bring up the Ubuntu vm
+
+    vagrant up
+
+To test AppRole
+
+    vagrant ssh
+    /vagrant/vault-approle-setup.sh
+    /vagrant/vault-approle-token.sh
+
+### Current Status
+
+The above usage steps work. Items to be completed:
+1. Token management script needs to be managed by systemd
+2. Script logic calculating token renewal period needs to be completed.
+3. Need to complete AppRole push example
 
 ### Token management script logic
 
@@ -85,6 +96,7 @@ Scripts used in this repository
      |  token renewal. Rinse & repeat.            |
      +--------------------------------------------+
 ```
+
 
 #### AppRole pull configuration (TODO)
 

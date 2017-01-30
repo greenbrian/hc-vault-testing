@@ -32,7 +32,7 @@ The below are end to end steps on using AppRole for managing your secret introdu
 5. Read `role_id` for AppRole 'foo'. This is a long lasting role identifier for this AppRole (foo). Akin to an email address or user ID. This information is not sensitive in and of itself, but you would not want to share it publicly.
 6. Embed the `role_id` within your operating system image. This can be done via Packer, or during provisioning steps.
 7. Read `secret_id` for AppRole 'foo'. This token should be treated as sensitive, and is meant to be short lived. Using response wrapping here is a good idea as it protects the `secret_id` during the delivery process.
-8. Deploy the `secret_id` during orchestration activities (during application deployment, configuration management or some steps post provisioning)
+8. Deploy the `secret_id` during orchestration activities (during application deployment, configuration management or some steps post provisioning). An example might be a deploy using an orchestrator capable of API calls, with the first step being the retrieval of the `secret_id` from Vault.
 9. Use a script or process that performs the login operation that makes a request to Vault combining `role_id` + `secret_id` to obtain a token. This script should also perform maintenance of the token, ensuring it is renewed on a regular basis.  I have an example shell script at scripts/vault-approle-token.sh that can be executed via systemd that can perform this process.
 10. Consul-template or envconsul can now use the obtained token to make requests to Vault for secrets.
 

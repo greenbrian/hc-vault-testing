@@ -56,7 +56,7 @@ To test AppRole
 
 ### Current Status
 
-The above usage steps work. Items to be completed:
+The above usage steps work. Items to be completed:  
 
 1. Token management script needs to be managed by systemd
 2. Script logic calculating token renewal period needs to be completed.

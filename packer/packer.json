@@ -1,0 +1,152 @@
+{
+  "variables": {
+    "aws_access_key":  "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key":  "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "atlas_username":  "{{env `ATLAS_USERNAME`}}",
+    "pubkey": "{{env `BG_PUB_KEY`}}",
+    "vault_enterprise_url": "{{env `VAULT_ENT_URL`}}",
+    "consul_enterprise_url": "{{env `CONSUL_ENT_URL`}}"
+  },
+  "builders": [
+    {
+      "name": "consul-vault",
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-east-1",
+      "source_ami": "ami-40d28157",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "ubuntu-16-consul-vault-{{isotime \"2006-01-02-15-04\"}}",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Latest"
+      }
+    },
+    {
+      "name": "nginx",
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-east-1",
+      "source_ami": "ami-40d28157",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "ubuntu-16-nginx-{{isotime \"2006-01-02-15-04\"}}",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Latest"
+      }
+    },
+    {
+      "name": "haproxy",
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-east-1",
+      "source_ami": "ami-40d28157",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "ubuntu-16-haproxy-{{isotime \"2006-01-02-15-04\"}}",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Latest"
+      }
+    }
+  ],
+
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+           "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done"
+      ]
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/base.sh",
+        "scripts/consul.sh",
+        "scripts/consul-template.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "cd /tmp",
+        "wget {{ user `vault_enterprise_url`}} --quiet -O /tmp/vault.zip",
+        "wget {{ user `consul_enterprise_url`}} --quiet -O /tmp/consul.zip"
+      ],
+      "only": ["consul-vault"]
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/consul-ui.sh",
+        "scripts/vault.sh"
+      ],
+      "only": ["consul-vault"]
+    },
+    {
+      "type": "shell",
+      "script": "scripts/haproxy.sh",
+      "only": ["haproxy"]
+    },
+    {
+      "type": "shell",
+      "script": "scripts/nginx.sh",
+      "only": ["nginx"]
+    },
+    {
+      "type": "shell",
+        "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+        "inline": [
+           "sudo useradd -m {{user `atlas_username`}} -s /bin/bash",
+           "sudo mkdir -p /home/{{user `atlas_username`}}/.ssh/",
+           "sudo echo \"{{user `atlas_username`}} ALL=(root) NOPASSWD: ALL\" >> /etc/sudoers.d/{{user `atlas_username`}}"
+            ]
+    },
+    {
+      "type": "shell",
+        "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+        "inline": [
+           "echo {{user `pubkey`}} > /tmp/authorized_keys",
+           "sudo mv /tmp/authorized_keys /home/{{user `atlas_username`}}/.ssh/authorized_keys",
+           "sudo chown -R {{user `atlas_username`}}:{{user `atlas_username`}} /home/{{user `atlas_username`}}/.ssh/",
+           "sudo chmod 700 /home/{{user `atlas_username`}}/.ssh/",
+           "sudo chmod 600 /home/{{user `atlas_username`}}/.ssh/authorized_keys"
+            ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "atlas",
+      "only": ["consul-vault"],
+      "artifact": "{{user `atlas_username`}}/consul-vault",
+      "artifact_type": "amazon.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    },
+    {
+      "type": "atlas",
+      "only": ["nginx"],
+      "artifact": "{{user `atlas_username`}}/nginx",
+      "artifact_type": "amazon.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    },
+    {
+      "type": "atlas",
+      "only": ["haproxy"],
+      "artifact": "{{user `atlas_username`}}/haproxy",
+      "artifact_type": "amazon.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    }
+  ]
+}

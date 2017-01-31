@@ -9,3 +9,7 @@ output "consul_ui" {
 output "primary_consul" {
   value = "${aws_instance.consul-vault.0.private_dns}"
 }
+
+output "vault_ui" {
+  value = "http://${aws_instance.consul-vault.0.public_dns}:8200/ui/"
+}

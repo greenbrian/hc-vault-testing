@@ -84,7 +84,6 @@
     {
       "type": "shell",
       "scripts": [
-        "scripts/consul-ui.sh",
         "scripts/vault.sh"
       ],
       "only": ["consul-vault"]
@@ -124,7 +123,7 @@
     {
       "type": "atlas",
       "only": ["consul-vault"],
-      "artifact": "{{user `atlas_username`}}/consul-vault",
+      "artifact": "{{user `atlas_username`}}/hcvt-consul-vault",
       "artifact_type": "amazon.image",
       "metadata": {
         "created_at": "{{timestamp}}"
@@ -133,7 +132,7 @@
     {
       "type": "atlas",
       "only": ["nginx"],
-      "artifact": "{{user `atlas_username`}}/nginx",
+      "artifact": "{{user `atlas_username`}}/hcvt-nginx",
       "artifact_type": "amazon.image",
       "metadata": {
         "created_at": "{{timestamp}}"
@@ -142,7 +141,7 @@
     {
       "type": "atlas",
       "only": ["haproxy"],
-      "artifact": "{{user `atlas_username`}}/haproxy",
+      "artifact": "{{user `atlas_username`}}/hcvt-haproxy",
       "artifact_type": "amazon.image",
       "metadata": {
         "created_at": "{{timestamp}}"

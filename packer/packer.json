@@ -65,6 +65,12 @@
     },
     {
       "type": "shell",
+      "scripts": [
+        "scripts/base.sh",
+      ]
+    },
+    {
+      "type": "shell",
       "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "inline": [
         "cd /tmp",
@@ -76,7 +82,6 @@
     {
       "type": "shell",
       "scripts": [
-        "scripts/base.sh",
         "scripts/consul.sh",
         "scripts/consul-template.sh"
       ]

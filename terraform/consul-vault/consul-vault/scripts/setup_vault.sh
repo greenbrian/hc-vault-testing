@@ -8,17 +8,17 @@ export VAULT_ADDR=http://127.0.0.1:8200
 cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 
 if [ ! $(cget root-token) ]; then
-  echo "Initialize Vault"
+  logger "$0 - Initializing Vault"
   vault init -address=http://localhost:8200 | tee /tmp/vault.init > /dev/null
 
   # Store master keys in consul for operator to retrieve and remove
   COUNTER=1
-  cat /tmp/vault.init | grep 'Unseal' | awk '{print $4}' | for key in $(cat -); do
+  grep 'Unseal' /tmp/vault.init | awk '{print $4}' | for key in $(cat -); do
     curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/unseal-key-$COUNTER -d $key
     COUNTER=$((COUNTER + 1))
   done
 
-  export ROOT_TOKEN=$(cat /tmp/vault.init | grep 'Root' | awk '{print $4}')
+  export ROOT_TOKEN=$(grep 'Root' /tmp/vault.init | awk '{print $4}')
   curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/root-token -d $ROOT_TOKEN
 
   echo "Remove master keys from disk"
@@ -28,15 +28,16 @@ if [ ! $(cget root-token) ]; then
   #curl -fX PUT 127.0.0.1:8500/v1/kv/service/nodejs/show_vault -d "true"
   #curl -fX PUT 127.0.0.1:8500/v1/kv/service/nodejs/vault_files -d "aws.html,generic.html"
 else
-  echo "Vault has already been initialized, skipping."
+  logger "$0 - Vault already initialized"
 fi
 
-echo "Unsealing Vault"
+logger "$0 - Unsealing Vault"
 vault unseal $(cget unseal-key-1)
 vault unseal $(cget unseal-key-2)
 vault unseal $(cget unseal-key-3)
 
-echo "Vault setup complete."
+logger "$0 - Vault setup complete"
+
 
 instructions() {
   cat <<EOF

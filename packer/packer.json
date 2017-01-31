@@ -76,7 +76,6 @@
         "curl -L {{ user `vault_enterprise_url`}} > /tmp/vault.zip",
         "curl -L {{ user `consul_enterprise_url`}} > /tmp/consul.zip"
       ],
-      "only": ["consul-vault"]
     },
     {
       "type": "shell",

@@ -74,8 +74,8 @@
       "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "inline": [
         "cd /tmp",
-        "wget {{ user `vault_enterprise_url`}} --quiet -O /tmp/vault.zip",
-        "wget {{ user `consul_enterprise_url`}} --quiet -O /tmp/consul.zip"
+        "curl -L {{ user `vault_enterprise_url`}} > vault.zip",
+        "curl -L {{ user `consul_enterprise_url`}} > consul.zip"
       ],
       "only": ["consul-vault"]
     },

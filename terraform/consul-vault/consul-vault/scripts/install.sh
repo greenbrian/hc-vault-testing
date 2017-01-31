@@ -16,7 +16,7 @@ CONSUL_FLAGS="\
 -bootstrap-expect=${SERVER_COUNT} \
 -join=${CONSUL_JOIN} \
 -data-dir=/opt/consul/data \
--client 0.0.0.0 -ui 
+-client 0.0.0.0 -ui"
 EOF
 
 # setup consul UI specific iptables rules

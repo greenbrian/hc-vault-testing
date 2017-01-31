@@ -65,14 +65,6 @@
     },
     {
       "type": "shell",
-      "scripts": [
-        "scripts/base.sh",
-        "scripts/consul.sh",
-        "scripts/consul-template.sh"
-      ]
-    },
-    {
-      "type": "shell",
       "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "inline": [
         "cd /tmp",
@@ -80,6 +72,14 @@
         "wget {{ user `consul_enterprise_url`}} --quiet -O /tmp/consul.zip"
       ],
       "only": ["consul-vault"]
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/base.sh",
+        "scripts/consul.sh",
+        "scripts/consul-template.sh"
+      ]
     },
     {
       "type": "shell",

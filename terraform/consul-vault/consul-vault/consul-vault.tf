@@ -66,7 +66,7 @@ resource "aws_instance" "consul-vault" {
     inline = [
       "sudo chmod +x /tmp/setup_vault.sh",
       "nohup /tmp/setup_vault.sh &",
-      "sleep 1",
+      "sleep 5",
     ]
   }
 }

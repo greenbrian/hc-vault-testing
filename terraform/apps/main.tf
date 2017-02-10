@@ -2,12 +2,14 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "atlas" {
+    token = "${var.atlas_token}"
+}
 
 data "terraform_remote_state" "hcvt_consul_vault" {
   backend = "atlas"
   config {
     name = "bgreen/hcvt_consul_vault"
-    access_token = "$"
   }
 }
 

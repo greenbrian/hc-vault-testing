@@ -4,3 +4,4 @@ variable "consul_server_count" {
   description = "Number of Consul servers to launch"
   default     = "3"
 }
+variable "atlas_token" {}

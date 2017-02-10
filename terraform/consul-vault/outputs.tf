@@ -10,7 +10,6 @@ output "primary_consul" {
   value = "${module.consul-vault.primary_consul}"
 }
 
-
 output "subnet_id" {
   value = "${module.network.subnet_id}"
 }

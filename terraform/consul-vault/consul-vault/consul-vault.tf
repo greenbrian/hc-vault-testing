@@ -10,18 +10,6 @@ data "atlas_artifact" "consul-vault" {
   build = "latest"
 }
 
-data "template_file" "consul_config" {
-  count    = "${var.consul_server_count}"
-  template = "${path.module}/scripts/consul.sh.tpl"
-
-  lifecycle { create_before_destroy = true }
-
-  vars {
-    consul_server_count = "${count}"
-    consul_join_address = "${aws_instance.consul-vault.0.private_dns}"
-  }
-}
-
 resource "aws_instance" "consul-vault" {
   ami                    = "${data.atlas_artifact.consul-vault.metadata_full.region-us-east-1}"
   instance_type          = "t2.micro"
@@ -38,7 +26,6 @@ resource "aws_instance" "consul-vault" {
     private_key = "${var.priv_key}"
   }
 
-
   provisioner "remote-exec" {
     inline = [
       "echo ${var.consul_server_count} > /tmp/consul-server-count",
@@ -51,7 +38,7 @@ resource "aws_instance" "consul-vault" {
       "${path.module}/scripts/install.sh",
     ]
   }
-    
+
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl enable consul.service",

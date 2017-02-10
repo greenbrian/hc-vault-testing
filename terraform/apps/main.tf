@@ -9,7 +9,7 @@ provider "atlas" {
 data "terraform_remote_state" "hcvt_consul_vault" {
   backend = "atlas"
   config {
-    name = "bgreen/hcvt_consul_vault"
+    name = "bgreen/hcvt-consul-vault"
   }
 }
 
@@ -19,7 +19,7 @@ module "haproxy" {
   priv_key       = "${var.bg_priv_key}"
   primary_consul = "${data.terraform_remote_state.hcvt_consul_vault.primary_consul}"
   subnet_id      = "${data.terraform_remote_state.hcvt_consul_vault.subnet_id}"
-  hcvt_sg_id     = "${data.terraform_remote_state.hcvt_consul_vault.output.hcvt_sg_id}"
+  hcvt_sg_id     = "${data.terraform_remote_state.hcvt_consul_vault.hcvt_sg_id}"
 }
 
 module "nginx" {

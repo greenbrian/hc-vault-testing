@@ -21,6 +21,6 @@ sudo iptables-save | sudo tee /etc/iptables.rules
 sudo chown root:root /etc/default/consul
 sudo chmod 0644 /etc/default/consul
 
-hostname $(curl http://169.254.169.254/latest/meta-data/public-hostname)
-echo "127.0.1.1 $(curl http://169.254.169.254/latest/meta-data/public-hostname)" >> /etc/hosts
-echo "$(curl http://169.254.169.254/latest/meta-data/public-hostname)" > /etc/hostname
+sudo hostname $(curl http://169.254.169.254/latest/meta-data/public-hostname)
+sudo echo "127.0.1.1 $(curl http://169.254.169.254/latest/meta-data/public-hostname)" >> /etc/hosts
+sudo echo "$(curl http://169.254.169.254/latest/meta-data/public-hostname)" > /etc/hostname

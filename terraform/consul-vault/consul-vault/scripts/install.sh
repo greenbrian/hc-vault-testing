@@ -21,6 +21,11 @@ sudo iptables-save | sudo tee /etc/iptables.rules
 sudo chown root:root /etc/default/consul
 sudo chmod 0644 /etc/default/consul
 
-sudo hostname $(curl http://169.254.169.254/latest/meta-data/public-hostname)
-sudo echo "127.0.1.1 $(curl http://169.254.169.254/latest/meta-data/public-hostname)" >> /etc/hosts
-sudo echo "$(curl http://169.254.169.254/latest/meta-data/public-hostname)" > /etc/hostname
+new_hostname=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+sudo hostname $new_hostname
+sudo bash -c "cat >>/etc/hosts" << HOSTS
+127.0.1.1 $new_hostname
+HOSTS
+sudo bash -c "cat >>/etc/hosts" << NEWHOSTNAME
+$new_hostname
+NEWHOSTNAME

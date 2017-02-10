@@ -82,7 +82,8 @@
       "scripts": [
         "scripts/consul.sh",
         "scripts/consul-template.sh",
-        "scripts/dnsmasq.sh"
+        "scripts/dnsmasq.sh",
+        "scripts/notes.sh"
       ]
     },
     {

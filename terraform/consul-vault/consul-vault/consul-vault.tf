@@ -38,8 +38,20 @@ resource "aws_instance" "consul-vault" {
     private_key = "${var.priv_key}"
   }
 
-  user_data = "${data.template_file.consul_config.rendered}"
 
+  provisioner "remote-exec" {
+    inline = [
+      "echo ${var.consul_server_count} > /tmp/consul-server-count",
+      "echo ${aws_instance.consul-vault.0.private_dns} > /tmp/consul-server-addr",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    scripts = [
+      "${path.module}/scripts/install.sh",
+    ]
+  }
+    
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl enable consul.service",

@@ -14,7 +14,7 @@ data "terraform_remote_state" "hcvt_consul_vault" {
 module "haproxy" {
   source         = "./haproxy"
   user           = "${var.user}"
-  key_path       = "${var.bg_priv_key}"
+  priv_key       = "${var.bg_priv_key}"
   primary_consul = "${data.terraform_remote_state.hcvt_consul_vault.primary_consul}"
   subnet_id      = "${data.terraform_remote_state.hcvt_consul_vault.subnet_id}"
   hcvt_sg_id     = "${data.terraform_remote_state.hcvt_consul_vault.output.hcvt_sg_id}"

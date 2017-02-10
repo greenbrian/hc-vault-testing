@@ -25,16 +25,10 @@ curl -X POST \
      http://127.0.0.1:8200/v1/sys/policy/waycoolapp \
       -d '{"rules":"path \"secret/waycoolapp\" {\n capabilities = [\"read\"]\n} \npath \"auth/token/renew\" {\n capabilities = [\"update\"]\n} \npath \"auth/token/lookup-accessor\" {\n capabilities = [\"update\"]\n} \npath \"auth/token/lookup\" {\n capabilities = [\"read\"]\n}"}'
 
-#     	-d '{"rules":"path \"secret/waycoolapp\" {\n  capabilities = [\"read\"]\n}"}'
-#      -d '{"rules":"path \"mysql/creds/todo\" {policy=\"read\"}"}'
-#      -d '{"rules":"path \"secret/waycoolapp\" {\n  capabilities = [\"read\"]\n}"}'
-
-# {"rules":"path secret/waycoolapp\" {\n  capabilities = [\"read\"]\n} \n path \"auth/token/renew/*\" {\n capabilities = [\"create\", \"read\", \"update\", \"delete\", \"list\"]}\"}'
-
 echo "Creating AppRole..."
 curl -X POST \
      -H "X-Vault-Token:$VAULT_TOKEN" \
-     -d '{"policies":"waycoolapp","secret_id_num_uses":"1000","secret_id_ttl":"3600","token_ttl":"5m","token_max_ttl":"10m"}' \
+     -d '{"policies":"waycoolapp","secret_id_num_uses":"1000","period":"3600"}' \
      http://127.0.0.1:8200/v1/auth/approle/role/waycoolapp
 
 

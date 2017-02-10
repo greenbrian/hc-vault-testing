@@ -3,19 +3,33 @@
 set -e
 
 vault_addr="http://127.0.0.1:8200"
-role_id=$(if [ -f /tmp/role_id ] && [ -s /tmp/role_id ]; then cat /tmp/role_id ; fi)
-secret_id=$(if [ -f /tmp/secret_id ] && [ -s /tmp/secret_id ]; then cat /tmp/secret_id ; fi)
-client_token=$(if [ -f /tmp/client_token ] && [ -s /tmp/client_token ]; then cat /tmp/client_token ; fi)
-accessor=$(if [ -f /tmp/accessor ] && [ -s /tmp/accessor ]; then cat /tmp/accessor ; fi)
+role_id_path="/tmp/role_id"
+secret_id_path="/tmp/secret_id"
+client_token_path="/tmp/client_token"
+accessor_path="/tmp/accessor"
 
-echo "role_id is $role_id"
-echo "secret_id is $secret_id"
-echo "client_token is $client_token"
-echo "accessor is $accessor"
+eval_vars() {
+role_id=$(if [ -f "$role_id_path" ] && [ -s "$role_id_path" ]; then cat "$role_id_path" ; fi)
+secret_id=$(if [ -f "$secret_id_path" ] && [ -s "$secret_id_path" ]; then cat "$secret_id_path" ; fi)
+client_token=$(if [ -f "$client_token_path" ] && [ -s "$client_token_path" ]; then cat "$client_token_path" ; fi)
+accessor=$(if [ -f "$accessor_path" ] && [ -s "$accessor_path" ]; then cat "$accessor_path" ; fi)
+}
+
+
+token_exists() {
+echo $client_token
+echo $accessor
+if [ -z "$client_token" ] || [ -z "$accessor" ]; then
+  echo "$0 - Token or accessor does not exist"
+  return 1
+else
+  echo 0
+fi
+}
 
 
 token_is_valid() {
-  echo "checking token validity"
+  echo "Checking token validity"
   token_lookup=$(curl -X POST \
        -H "X-Vault-Token: $client_token" \
        -w %{http_code} \
@@ -23,12 +37,12 @@ token_is_valid() {
        --output /dev/null \
        -d '{"accessor":"'"$accessor"'"}'  \
        $vault_addr/v1/auth/token/lookup-accessor)
-  echo $token_lookup
   if [ "$token_lookup" == "200" ]; then
+    echo "$0 - Valid token found, exiting"
     return 0
   else
+    echo "$0 - Invalid token found"
     return 1
-    echo "INVALID TOKEN!"
   fi
 }
 
@@ -41,54 +55,47 @@ curl -X POST \
 }
 
 
-token_renewal() {
-  echo "renewing token!"
-  echo "client token is $client_token"
+renew_token() {
+  echo "Renewing token"
   curl -X POST \
        --silent \
        -H "X-Vault-Token: $client_token" \
-       -d '{"token":"'"$client_token"'"}'  \
-       $vault_addr/v1/auth/token/renew | jq
+       $vault_addr/v1/auth/token/renew-self | jq
 }
 
-wait_half_life() {
-  # will sort this out when the rest works
+
+wait_for_role_id_and_secret_id() {
+while [ -z "$role_id" ] || [ -z "$secret_id" ]; do
+  eval_vars
+  echo "$0 - Waiting for role_id and secret_id"
   sleep 5
+done
 }
 
 
-main(){
-while true
-do
-    if [ ! -z ${role_id+x} ] || [ ! -z ${secret_id+x} ]; then
-        # continue if both role_id and secret_id exist
-        if [ ! -z ${client_token+x} ] || [ ! -z ${accessor+x} ]; then
-            # if both client_token and accessor exist
-            if token_is_valid; then
-                logger "$0 - Found valid token."
-                wait_half_life
-                token_renewal
-                logger "$0 - Token renewed successfully."
-            else
-                fetch_token_and_accessor
-                logger "$0 - Token retrieved successfully."
-                client_token=$(if [ -f /tmp/client_token ] && [ -s /tmp/client_token ]; then cat /tmp/client_token ; fi)
-                accessor=$(if [ -f /tmp/accessor ] && [ -s /tmp/accessor ]; then cat /tmp/accessor ; fi)
-                wait_half_life
-                token_renewal
-            fi
-        else
-            fetch_token_and_accessor
-            logger "$0 - Token retrieved successfully."
-            wait_half_life
-            token_renewal
-        fi
-    else
-      logger "$0 - ERROR Vault role_id or secret_id do not exist."
-      # wait for role_id and secret_id to be populated
-      sleep 300
-    fi
-done
+main() {
+eval_vars
+if token_exists; then
+  if token_is_valid; then
+    renew_token
+    echo "$0 - Token renewed successfully"
+    exit 0
+  else
+    wait_for_role_id_and_secret_id     ## need to write this
+    fetch_token_and_accessor
+    exit 0
+  fi
+elif [ -z "$role_id" ] || [ -z "$secret_id" ]; then
+  # no role_id or secret_id so we wait
+  wait_for_role_id_and_secret_id
+  fetch_token_and_accessor
+  exit 0
+else
+  # we have token and role_id and secret_id but no token
+  # need to fetch token
+  fetch_token_and_accessor
+  exit 0
+fi
 }
 
 main

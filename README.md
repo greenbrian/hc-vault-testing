@@ -66,37 +66,52 @@ The above usage steps work. Items to be completed:
 
 
 ```
-                         +----------------+
-                         | does token and |
-                         | token_accessor |
-                         | exist?         |
-                         +----------------+
-           +-----+               |            +----+
-           | yes | <------------------------> | no |
-           +-----+                            +----+
-              |                                  |
-              v                                  |
-                                                 |
-     +---------------+                           |
-     | Is the token  |                           |
-     | still valid?  |                           |
-     |               |                           v
-     +---------------+
-                |                     +-------------------------+
-                |                     | use role_id + secret_id |
-     +-----+    |      +----+         | to fetch new token and  |
-     | yes | <-------> | no +-------> | token_accessor          |
-     +-----+           +----+         +-------------------------+
-        |                                     |
-        |                                     |
-        v                                     v
 
-     +--------------------------------------------+
-     |  Get creation_ttl + current ttl and sleep  |
-     |  for (creation_ttl/ttl)/2 and then trigger |
-     |  token renewal. Rinse & repeat.            |
-     +--------------------------------------------+
+          +-------------------+
+          | does token exist? |
+          +-------------------+
+  +----+           |         +------+
+  | no +---------------------+  yes |
+  +----+                     +------+
+     |                           |
+     |                           |
+  +-----------------+            |
+  |does role_id and |            |
+  |secret_id exist? |            |
+  +-----------------+            |
+           |                     |
+  +----+   |         +-----+     |
+  | no +-------------+ yes |     |
+  +----+             +-----+     |
+     |                   |       |
+     |                   |       |
+  +-----------------+    |       |
+  |wait for role_id |    |       |
+  |and secret_id    |    |       |
+  +-----------------+    |       |
+          |              |       |
+  +-------------------------+    |
+  |   fetch token           |    |
+  +-------------------------+    |
+          |                      |
+          |                 +-------------+
+          |                 | renew token |
+          |                 +-------------+
+          |                      |
+          |                      |
+  +-----------------------------------+
+  |exit and let systemd trigger       |
+  |periodic token renewal             |
+  +-----------------------------------+
+
 ```
+
+systemd timer notes
+https://www.freedesktop.org/software/systemd/man/systemd.timer.html
+```Note that in case the unit to activate is already active at the time the timer elapses it is not restarted, but simply left running. There is no concept of spawning new service instances in this case. Due to this, services with RemainAfterExit= set (which stay around continuously even after the service's main process exited) are usually not suitable for activation via repetitive timers, as they will only be activated once, and then stay around forever.```
+https://www.certdepot.net/rhel7-use-systemd-timers/
+https://jason.the-graham.com/2013/03/06/how-to-use-systemd-timers/
+https://wiki.archlinux.org/index.php/Systemd/Timers
 
 
 #### AppRole pull configuration (TODO)

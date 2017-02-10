@@ -26,17 +26,17 @@ resource "aws_instance" "consul-vault" {
     private_key = "${var.priv_key}"
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "echo ${var.consul_server_count} > /tmp/consul-server-count",
-      "echo ${aws_instance.consul-vault.0.private_dns} > /tmp/consul-server-addr",
-    ]
-  }
+  data "template_file" "consul_config" {
+      count    = "${var.consul_server_count}"
+      template = "${path.module}/scripts/consul.sh.tpl"
 
-  provisioner "remote-exec" {
-    scripts = [
-      "${path.module}/scripts/install.sh",
-    ]
+      lifecycle { create_before_destroy = true }
+
+      vars {
+          node_name           = "${var.name}-${count.index+1}"
+          consul_server_count = "${count}"
+          consul_join_address = "${aws_instance.consul-vault.0.private_dns}"
+      }
   }
 
   provisioner "remote-exec" {
@@ -59,13 +59,13 @@ resource "aws_instance" "consul-vault" {
   /* keys insecurely and is only used for demonstration purposes  */
 
   provisioner "file" {
-    source      = "${path.module}/scripts/setup_vault.sh"
-    destination = "/tmp/setup_vault.sh"
+    source      = "${path.module}/scripts/vault_init_and_unseal.sh"
+    destination = "/tmp/vault_init_and_unseal.sh"
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod +x /tmp/setup_vault.sh",
-      "echo /tmp/setup_vault.sh | at now + 5 min",
+      "sudo chmod +x /tmp/vault_init_and_unseal.sh",
+      "echo /tmp/vault_init_and_unseal.sh | at now + 1 min",
     ]
   }
 }

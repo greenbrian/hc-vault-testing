@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-# Read from the file we created
-SERVER_COUNT=$(cat /tmp/consul-server-count | tr -d '\n')
-CONSUL_JOIN=$(cat /tmp/consul-server-addr | tr -d '\n')
-
 sudo bash -c "cat >/etc/default/consul" << EOF
 CONSUL_FLAGS="\
 -server \
--bootstrap-expect=${SERVER_COUNT} \
--join=${CONSUL_JOIN} \
+-bootstrap-expect={{ consul_server_count }} \
+-join={{ consul_join_address }} \
 -data-dir=/opt/consul/data \
 -client 0.0.0.0 -ui"
 EOF

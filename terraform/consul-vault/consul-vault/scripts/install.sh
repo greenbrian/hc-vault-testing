@@ -21,6 +21,6 @@ sudo iptables-save | sudo tee /etc/iptables.rules
 sudo chown root:root /etc/default/consul
 sudo chmod 0644 /etc/default/consul
 
-hostname consul_vault.$(curl http://169.254.169.254/latest/meta-data/instance-id)
-echo "127.0.1.1 consul_vault.$(curl http://169.254.169.254/latest/meta-data/instance-id)" >> /etc/hosts
-echo "consul_vault.$(curl http://169.254.169.254/latest/meta-data/instance-id)" > /etc/hostname
+hostname $(curl http://169.254.169.254/latest/meta-data/public-hostname)
+echo "127.0.1.1 $(curl http://169.254.169.254/latest/meta-data/public-hostname)" >> /etc/hosts
+echo "$(curl http://169.254.169.254/latest/meta-data/public-hostname)" > /etc/hostname

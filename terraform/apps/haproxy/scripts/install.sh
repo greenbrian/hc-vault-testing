@@ -66,6 +66,6 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
 }
 SYSTEM
 
-hostname haproxy.$(curl http://169.254.169.254/latest/meta-data/instance-id)
-echo "127.0.1.1 haproxy.$(curl http://169.254.169.254/latest/meta-data/instance-id)" >> /etc/hosts
-echo "haproxy.$(curl http://169.254.169.254/latest/meta-data/instance-id)" > /etc/hostname
+hostname $(curl http://169.254.169.254/latest/meta-data/public-hostname)
+echo "127.0.1.1 $(curl http://169.254.169.254/latest/meta-data/public-hostname)" >> /etc/hosts
+echo "$(curl http://169.254.169.254/latest/meta-data/public-hostname)" > /etc/hostname

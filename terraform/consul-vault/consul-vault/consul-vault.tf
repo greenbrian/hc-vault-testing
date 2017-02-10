@@ -26,17 +26,21 @@ resource "aws_instance" "consul-vault" {
     private_key = "${var.priv_key}"
   }
 
-  data "template_file" "consul_config" {
-      count    = "${var.consul_server_count}"
-      template = "${path.module}/scripts/consul.sh.tpl"
+  user_data = "${data.template_file.consul_config.rendered}"
 
-      lifecycle { create_before_destroy = true }
+}
 
-      vars {
-          consul_server_count = "${count}"
-          consul_join_address = "${aws_instance.consul-vault.0.private_dns}"
-      }
-  }
+data "template_file" "consul_config" {
+    count    = "${var.consul_server_count}"
+    template = "${path.module}/scripts/consul.sh.tpl"
+
+    lifecycle { create_before_destroy = true }
+
+    vars {
+        consul_server_count = "${count}"
+        consul_join_address = "${aws_instance.consul-vault.0.private_dns}"
+    }
+}
 
   provisioner "remote-exec" {
     inline = [

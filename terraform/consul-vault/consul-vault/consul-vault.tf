@@ -33,7 +33,6 @@ resource "aws_instance" "consul-vault" {
       lifecycle { create_before_destroy = true }
 
       vars {
-          node_name           = "${var.name}-${count.index+1}"
           consul_server_count = "${count}"
           consul_join_address = "${aws_instance.consul-vault.0.private_dns}"
       }

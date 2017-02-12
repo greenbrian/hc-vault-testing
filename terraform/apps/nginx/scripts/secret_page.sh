@@ -25,6 +25,20 @@ consul {
   address = "127.0.0.1:8500"
 }
 
+retry {
+  enabled = true
+
+  # This specifies the number of attempts to make before giving up. Each
+  # attempt adds the exponential backoff sleep time. Setting this to a
+  # negative number will implement an unlimited number of retries.
+  attempts = 10
+
+  # This is the base amount of time to sleep between retry attempts. Each
+  # retry sleeps for an exponent of 2 longer than this base. For 5 retries,
+  # the sleep times would be: 250ms, 500ms, 1s, 2s, then 4s.
+  backoff = "500ms"
+}
+
 vault {
   address = "http://active.vault.service.dc1.consul:8200"
   token = "/ramdisk/client_token"

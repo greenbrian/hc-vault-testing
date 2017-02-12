@@ -76,8 +76,8 @@ resource "aws_instance" "nginx" {
     inline = [
       "sudo mv /tmp/token_mgmt.sh /usr/local/bin/token_mgmt.sh",
       "sudo chmod +x /usr/local/bin/token_mgmt.sh",
-      "sudo mv /tmp/token_mgmt.service /usr/lib/systemd/system/token_mgmt.service",
-      "sudo mv /tmp/token_mgmt.timer /usr/lib/systemd/system/token_mgmt.timer",
+      "sudo mv /tmp/token_mgmt.service /lib/systemd/system/token_mgmt.service",
+      "sudo mv /tmp/token_mgmt.timer /lib/systemd/system/token_mgmt.timer",
       "sudo systemctl start token_mgmt.timer",
       "sudo systemctl enable token_mgmt.timer"
     ]

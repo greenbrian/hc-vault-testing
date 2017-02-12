@@ -50,8 +50,8 @@ fetch_token_and_accessor() {
 curl -X POST \
      --silent \
      -d '{"role_id":"'"$role_id"'","secret_id":"'"$secret_id"'"}' \
-     $vault_addr/v1/auth/approle/login |\
-     tee >(jq --raw-output '.auth.accessor' > ${accessor_path}) >(jq --raw-output '.auth.client_token' > ${client_token_path})
+     $vault_addr/v1/auth/approle/login | \
+     tee >( jq --raw-output '.auth.accessor' > ${accessor_path} ) >( jq --raw-output '.auth.client_token' > ${client_token_path} )
 }
 
 

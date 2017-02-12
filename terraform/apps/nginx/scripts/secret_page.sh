@@ -27,7 +27,7 @@ consul {
 
 vault {
   address = "http://active.vault.service.dc1.consul:8200"
-  token = /ramdisk/client_token
+  token = "/ramdisk/client_token"
 }
 
 template {

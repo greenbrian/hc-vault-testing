@@ -65,8 +65,7 @@ renew_token() {
 
 
 wait_for_role_id_and_secret_id() {
-while [ -z "$role_id" ] || [ -z "$secret_id" ]; do
-  eval_vars
+while [ ! -s "$role_id_path" ] || [ ! -s "$secret_id_path" ]; do
   echo "$0 - Waiting for role_id and secret_id"
   sleep 5
 done
@@ -93,6 +92,7 @@ elif [ -z "$role_id" ] || [ -z "$secret_id" ]; then
 else
   # we have token and role_id and secret_id but no token
   # need to fetch token
+  eval_vars
   fetch_token_and_accessor
   exit 0
 fi

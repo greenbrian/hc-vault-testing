@@ -2,10 +2,10 @@
 
 set -e
 
-vault_addr="http://127.0.0.1:8200"
+vault_addr="http://active.vault.service.dc1.consul:8200"
 role_id_path="/tmp/role_id"
 secret_id_path="/tmp/secret_id"
-client_token_path="/tmp/client_token"
+client_token_path="/ramdisk/client_token"
 accessor_path="/tmp/accessor"
 
 eval_vars() {
@@ -51,7 +51,7 @@ curl -X POST \
      --silent \
      -d '{"role_id":"'"$role_id"'","secret_id":"'"$secret_id"'"}' \
      $vault_addr/v1/auth/approle/login |\
-     tee >(jq --raw-output '.auth.accessor' > /tmp/accessor) >(jq --raw-output '.auth.client_token' > /tmp/client_token)
+     tee >(jq --raw-output '.auth.accessor' > ${accessor_path}) >(jq --raw-output '.auth.client_token' > ${client_token_path})
 }
 
 
@@ -99,5 +99,3 @@ fi
 }
 
 main
-
-export VAULT_TOKEN=$(cat /tmp/client_token)

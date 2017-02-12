@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-sleep 5m
-
 export VAULT_ADDR=http://127.0.0.1:8200
 
 cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }

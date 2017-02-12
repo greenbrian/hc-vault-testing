@@ -30,6 +30,7 @@ consul {
 
 vault {
   address = $VAULT_ADDR
+  token = /ramdisk/client_token
 }
 
 template {

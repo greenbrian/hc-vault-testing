@@ -46,6 +46,13 @@ resource "aws_instance" "nginx" {
     ]
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir /ramdisk"
+      "sudo mount -t tmpfs -o size=20M,mode=700 tmpfs /ramdisk"
+    ]
+  }
+
   provisioner "file" {
     source      = "${path.module}/scripts/secret_page.sh"
     destination = "/tmp/secret_page.sh"

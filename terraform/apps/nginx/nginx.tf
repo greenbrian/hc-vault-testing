@@ -57,12 +57,6 @@ resource "aws_instance" "nginx" {
     ]
   }
 
-  provisioner "remote-exec" {
-    scripts = [
-      "${path.module}/scripts/token_fetcher.sh",
-    ]
-  }
-
   provisioner "file" {
     source      = "${path.module}/scripts/token_mgmt.sh"
     destination = "/tmp/token_mgmt.sh"
@@ -89,6 +83,17 @@ resource "aws_instance" "nginx" {
     ]
   }
 
+
+  provisioner "file" {
+    source      = "${path.module}/scripts/token_fetcher.sh"
+    destination = "/tmp/token_fetcher.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod +x /tmp/token_fetcher.sh",
+      "echo /tmp/token_fetcher.sh | at now + 1 min",
+    ]
+  }
 
 
 }

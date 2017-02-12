@@ -13,3 +13,8 @@ output "haproxy_stats" {
 output "haproxy_web_frontend" {
   value = "${module.haproxy.haproxy_web_frontend}"
 }
+
+
+output "secrets_page" {
+  value = "${module.haproxy.haproxy_web_frontend_secrets}"
+}

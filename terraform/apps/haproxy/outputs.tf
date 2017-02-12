@@ -9,3 +9,7 @@ output "haproxy_stats" {
 output "haproxy_web_frontend" {
   value = "http://${aws_instance.haproxy.0.public_dns}"
 }
+
+output "haproxy_web_frontend_secrets" {
+  value = "http://${aws_instance.haproxy.0.public_dns}/secret.html"
+}

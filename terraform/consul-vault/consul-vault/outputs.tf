@@ -7,7 +7,7 @@ output "consul_ui" {
 }
 
 output "vault_ui_addresses" {
-  value = "${formatlist("http://%s", aws_instance.consul-vault.*.public_dns)}:8200/ui/"
+  value = "${formatlist("http://%s":8200/ui/, aws_instance.consul-vault.*.public_dns)}"
 }
 
 output "primary_consul" {

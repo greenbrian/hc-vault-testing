@@ -6,7 +6,7 @@ output "consul_ui" {
   value = "${module.consul-vault.consul_ui}"
 }
 
-output "vault_ui" {
+output "vault_ui_addresses" {
   value = ["${module.consul-vault.vault_ui_addresses}"]
 }
 

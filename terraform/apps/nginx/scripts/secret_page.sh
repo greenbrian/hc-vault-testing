@@ -11,8 +11,8 @@ sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/secret.html.c
 
 {{with secret "secret/waycoolapp" }}
   <body>
-      <h1>Homer Simpson SSN is <i>{{Data.HomerSimpsonSSN}}</i></h1>
-      <h1>Mr Burns SSN is <i>{{Data.MrBurnsSSN}}</i></h1>
+      <h1>Homer Simpson SSN is <i>{{.Data.HomerSimpsonSSN}}</i></h1>
+      <h1>Mr Burns SSN is <i>{{.Data.MrBurnsSSN}}</i></h1>
   </body>
   </html>
 {{end}}

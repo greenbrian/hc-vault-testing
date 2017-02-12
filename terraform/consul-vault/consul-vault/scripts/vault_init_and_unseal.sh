@@ -70,7 +70,9 @@ if vault status | grep active > /dev/null; then
   >(jq --raw-output '.data.secret_id' > /tmp/secret_id) \
   >(jq --raw-output '.data.secret_id_accessor' > /tmp/secret_id_accessor)
   curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/role_id -d $(cat /tmp/role_id)
+  sleep 2
   curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/secret_id -d $(cat /tmp/secret_id)
+  sleep 2
   curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/secret_id_accessor -d $(cat /tmp/secret_id_accessor)
 fi
 

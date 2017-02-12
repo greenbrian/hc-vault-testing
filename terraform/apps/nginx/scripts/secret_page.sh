@@ -3,7 +3,7 @@
 echo "Obtaining root token and vault address from Consul..."
 cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 ROOT_TOKEN=$(cget root-token)
-VAULT_ADDR=$(cat /tmp/consul-server-addr)
+VAULT_ADDR=http://active.vault.service.dc1.consul:8200
 
 
 echo "Creating Template for SECRET PAGE..."
@@ -27,10 +27,12 @@ SECRET
 
 echo "Install Consul template configuration file for secret page..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/consul-template.json" << EOF
-consul = "127.0.0.1:8500"
+consul {
+  127.0.0.1:8500
+}
 
 vault {
-  address = "http://$VAULT_ADDR:8200"
+  address = $VAULT_ADDR
   token = "$ROOT_TOKEN"
 }
 

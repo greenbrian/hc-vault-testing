@@ -6,7 +6,7 @@ vault_addr="http://active.vault.service.dc1.consul:8200"
 role_id_path="/tmp/role_id"
 secret_id_path="/tmp/secret_id"
 client_token_path="/ramdisk/client_token"
-accessor_path="/tmp/accessor"
+accessor_path="/ramdisk/accessor"
 
 eval_vars() {
 role_id=$(if [ -f "$role_id_path" ] && [ -s "$role_id_path" ]; then cat "$role_id_path" ; fi)
@@ -19,7 +19,7 @@ accessor=$(if [ -f "$accessor_path" ] && [ -s "$accessor_path" ]; then cat "$acc
 token_exists() {
 echo $client_token
 echo $accessor
-if [ -z "$client_token" ] || [ -z "$accessor" ]; then
+if [ ! -s "$client_token_path" ] || [ ! -s "$accessor_path" ]; then
   echo "$0 - Token or accessor does not exist"
   return 1
 else

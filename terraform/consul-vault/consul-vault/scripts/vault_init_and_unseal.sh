@@ -56,7 +56,11 @@ if vault status | grep active > /dev/null; then
   }
   path "auth/token/renew" {
     capabilities = ["update"]
-  }' | vault policy-write waycoolapp -
+  }
+  path "auth/token/renew-self" {
+    capabilities = ["update"]
+  }
+  ' | vault policy-write waycoolapp -
 
   # create approle for 'waycoolapp' with above policy and approle specific parameters
   vault write auth/approle/role/waycoolapp secret_id_num_uses=1000 period=3600 policies=waycoolapp

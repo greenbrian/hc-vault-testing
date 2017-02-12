@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 
-VAULT_ADDR=http://active.vault.service.dc1.consul:8200
-
-
 echo "Creating Template for SECRET PAGE..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/secret.html.ctmpl" << SECRET
   <html>
@@ -29,7 +26,7 @@ consul {
 }
 
 vault {
-  address = $VAULT_ADDR
+  address = http://active.vault.service.dc1.consul:8200
   token = /ramdisk/client_token
 }
 
@@ -38,7 +35,3 @@ template {
   destination = "/var/www/html/secret.html"
 }
 EOF
-
-echo "Starting Consul template service..."
-sudo systemctl enable consul-template.service
-sudo systemctl start consul-template

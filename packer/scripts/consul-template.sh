@@ -32,4 +32,4 @@ KillSignal=SIGINT
 WantedBy=multi-user.target
 EOF
 
-sudo chmod 0644 /etc/systemd/system/consul.service
+sudo chmod 0644 /etc/systemd/system/consul-template.service

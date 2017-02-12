@@ -34,8 +34,16 @@ resource "aws_instance" "nginx" {
   }
 
   provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir /ramdisk",
+      "sudo mount -t tmpfs -o size=20M,mode=700 tmpfs /ramdisk"
+    ]
+  }
+
+  provisioner "remote-exec" {
     scripts = [
       "${path.module}/scripts/install.sh",
+      "${path.module}/scripts/secret_page.sh"
     ]
   }
 
@@ -43,24 +51,8 @@ resource "aws_instance" "nginx" {
     inline = [
       "sudo systemctl enable consul.service",
       "sudo systemctl start consul",
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo mkdir /ramdisk",
-      "sudo mount -t tmpfs -o size=20M,mode=700 tmpfs /ramdisk"
-    ]
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/scripts/secret_page.sh"
-    destination = "/tmp/secret_page.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chmod +x /tmp/secret_page.sh",
+      "sudo systemctl enable consul-template.service",
+      "sudo systemctl start consul-template",
     ]
   }
 

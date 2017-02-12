@@ -99,3 +99,5 @@ fi
 }
 
 main
+
+export VAULT_TOKEN=$(cat /tmp/client_token)

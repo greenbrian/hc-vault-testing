@@ -64,11 +64,6 @@ resource "aws_instance" "nginx" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/scripts/token_fetcher.sh"
-    destination = "/tmp/token_mgmt.sh"
-  }
-
-  provisioner "file" {
     source      = "${path.module}/scripts/token_mgmt.sh"
     destination = "/tmp/token_mgmt.sh"
   }

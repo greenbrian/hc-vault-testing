@@ -61,7 +61,7 @@ if vault status | grep active > /dev/null; then
   }' | vault policy-write waycoolapp -
 
   # create approle for 'waycoolapp' with above policy and approle specific parameters
-  vault write auth/approle/role/testrole secret_id_num_uses=1000 period=3600 policies=waycoolapp
+  vault write auth/approle/role/waycoolapp secret_id_num_uses=1000 period=3600 policies=waycoolapp
 
   # read role_id for our approle
   vault read auth/approle/role/waycoolapp/role-id | grep role_id | awk '{print $2}' > /tmp/role_id

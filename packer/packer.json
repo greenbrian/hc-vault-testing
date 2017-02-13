@@ -82,6 +82,7 @@
       "scripts": [
         "scripts/consul.sh",
         "scripts/dnsmasq.sh",
+        "scripts/consul-template.sh",
         "scripts/notes.sh"
       ]
     },
@@ -103,8 +104,7 @@
     {
       "type": "shell",
       "scripts": [
-        "scripts/nginx.sh",
-        "scripts/consul-template-with-vault.sh",
+        "scripts/nginx.sh"
       ],
       "only": ["nginx"]
     },

@@ -21,18 +21,26 @@ SECRET
 
 echo "Install Consul template configuration file for secret page..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/consul-template.json" << EOF
+
 consul {
   address = "127.0.0.1:8500"
+
+  retry {
+    enabled = true
+    attempts = 5
+    backoff = "250ms"
+  }
 }
 
-retry {
-  enabled = true
-  attempts = 5
-  backoff = "250ms"
-}
 
 vault {
   address = "http://active.vault.service.dc1.consul:8200"
+
+  retry {
+    enabled = true
+    attempts = 5
+    backoff = "250ms"
+  }
 }
 
 template {

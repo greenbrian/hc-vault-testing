@@ -95,7 +95,10 @@
     },
     {
       "type": "shell",
-      "script": "scripts/haproxy.sh",
+      "scripts": [
+        "scripts/haproxy.sh",
+        "scripts/consul-template-with-vault.sh",
+      ],
       "only": ["haproxy"]
     },
     {

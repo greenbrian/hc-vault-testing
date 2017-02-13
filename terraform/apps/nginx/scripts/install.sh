@@ -14,7 +14,7 @@ sudo chown root:root /etc/default/consul
 sudo chmod 0644 /etc/default/consul
 
 echo "Configuring Vault environment..."
-sudo bash -c "cat >/etc/profile.d/vault.sh" << VAULTENV
+sudo bash -c "cat >/etc/profile.d/vault.sh" << 'VAULTENV'
 export VAULT_ADDR=http://active.vault.service.dc1.consul:8200
 export VAULT_TOKEN=$(cat /ramdisk/client_token)
 VAULTENV

@@ -96,8 +96,7 @@
     {
       "type": "shell",
       "scripts": [
-        "scripts/haproxy.sh",
-        "scripts/consul-template.sh",
+        "scripts/haproxy.sh"
       ],
       "only": ["haproxy"]
     },

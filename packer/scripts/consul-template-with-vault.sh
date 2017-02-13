@@ -35,7 +35,6 @@ OnFailure=token_mgmt.service
 Restart=on-failure
 RestartSec=15
 ExecStart=/usr/local/bin/consul-template.sh
-ExecStart=/usr/local/bin/consul-template -config=/etc/systemd/system/consul-template.d/consul-template.json
 KillSignal=SIGINT
 
 [Install]

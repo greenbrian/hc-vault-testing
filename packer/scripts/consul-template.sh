@@ -21,7 +21,6 @@ sudo bash -c "cat >/etc/systemd/system/consul-template.service" << 'EOF'
 Description=consul-template agent
 Requires=network-online.target
 After=network-online.target consul.service
-#After=network-online.target consul.service vault.service
 
 [Service]
 Restart=on-failure

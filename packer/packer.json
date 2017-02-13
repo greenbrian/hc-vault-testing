@@ -81,7 +81,6 @@
       "type": "shell",
       "scripts": [
         "scripts/consul.sh",
-        "scripts/consul-template.sh",
         "scripts/dnsmasq.sh",
         "scripts/notes.sh"
       ]
@@ -97,13 +96,16 @@
       "type": "shell",
       "scripts": [
         "scripts/haproxy.sh",
-        "scripts/consul-template-with-vault.sh",
+        "scripts/consul-template.sh",
       ],
       "only": ["haproxy"]
     },
     {
       "type": "shell",
-      "script": "scripts/nginx.sh",
+      "scripts": [
+        "scripts/nginx.sh",
+        "scripts/consul-template-with-vault.sh",
+      ],
       "only": ["nginx"]
     },
     {

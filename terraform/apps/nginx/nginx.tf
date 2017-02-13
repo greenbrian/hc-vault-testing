@@ -51,8 +51,6 @@ resource "aws_instance" "nginx" {
     inline = [
       "sudo systemctl enable consul.service",
       "sudo systemctl start consul",
-      "sudo systemctl enable consul-template.service",
-      "sudo systemctl start consul-template",
     ]
   }
 

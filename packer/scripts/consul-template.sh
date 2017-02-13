@@ -23,9 +23,9 @@ Requires=network-online.target
 After=network-online.target consul.service
 
 [Service]
-Restart=on-failure
+Restart=always
 RestartSec=15
-ExecStart=/usr/local/bin/consul-template -config=/etc/systemd/system/consul-template.d/consul-template.json
+ExecStart=/bin/sh -c "/usr/local/bin/consul-template -config=/etc/systemd/system/consul-template.d/consul-template.json"
 KillSignal=SIGINT
 
 [Install]

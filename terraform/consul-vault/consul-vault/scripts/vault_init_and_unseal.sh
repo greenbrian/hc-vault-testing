@@ -47,7 +47,7 @@ if vault status | grep active > /dev/null; then
   vault auth-enable approle
 
   # write some example secrets
-  vault write secret/waycoolapp HomerSimpsonSSN="200-23-9930" MrBurnsSSN="000-00-0002"
+  vault write secret/waycoolapp HomerSimpsonSSN="200-23-9930" MrBurnsSSN="000-00-0002" ttl=300s
 
   # create policy named 'waycoolapp'
   echo '

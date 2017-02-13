@@ -77,11 +77,8 @@ resource "aws_instance" "nginx" {
       "sudo chmod +x /usr/local/bin/token_mgmt.sh",
       "sudo mv /tmp/token_mgmt.service /lib/systemd/system/token_mgmt.service",
       "sudo mv /tmp/token_mgmt.timer /lib/systemd/system/token_mgmt.timer",
-      "sudo systemctl start token_mgmt.timer",
-      "sudo systemctl enable token_mgmt.timer"
     ]
   }
-
 
   provisioner "file" {
     source      = "${path.module}/scripts/token_fetcher.sh"

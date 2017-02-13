@@ -18,19 +18,10 @@ if [ ! -s "$client_token_path" ]; then
   echo "$0 - Token does not exist"
   return 1
 else
-  echo 0
+  return 0
 fi
 }
 
-
-fetch_token() {
-  curl -X POST \
-     --silent \
-     -d '{"role_id":"'"$role_id"'","secret_id":"'"$secret_id"'"}' \
-     $vault_addr/v1/auth/approle/login | tee \
-     >(jq --raw-output '.auth.client_token' > ${client_token_path}) \
-     > /dev/null
-}
 
 wait_for_role_id_and_secret_id() {
 while [ ! -s "$role_id_path" ] || [ ! -s "$secret_id_path" ]; do
@@ -41,12 +32,17 @@ done
 
 main() {
 eval_vars
-if token_exists; then
+if [ -s "$client_token_path" ]; then
   echo "$0 - Token exists"
   exit 0
 else
   wait_for_role_id_and_secret_id
-  fetch_token
+  curl -X POST \
+  --silent \
+  -d '{"role_id":"'"$role_id"'","secret_id":"'"$secret_id"'"}' \
+  $vault_addr/v1/auth/approle/login | tee \
+  >(jq --raw-output '.auth.client_token' > ${client_token_path}) \
+  > /dev/null
   exit 0
 fi
 }

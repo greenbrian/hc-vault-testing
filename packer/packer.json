@@ -99,16 +99,16 @@
     {
       "type": "shell",
       "scripts": [
-        "scripts/haproxy.sh",
-        "scripts/consul-template.sh"
+        "scripts/consul-template.sh",
+        "scripts/haproxy.sh"
       ],
       "only": ["haproxy"]
     },
     {
       "type": "shell",
       "scripts": [
-        "scripts/nginx.sh",
-        "scripts/consul-template-with-vault.sh"
+        "scripts/consul-template-with-vault.sh",
+        "scripts/nginx.sh"
       ],
       "only": ["nginx"]
     },

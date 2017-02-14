@@ -15,11 +15,11 @@ else
     echo "$0 - Waiting for role_id and secret_id"
     sleep 5
   done
-  curl -X POST \
+  client_token=$(curl -X POST \
   --silent \
   -d '{"role_id":"'"$(cat $role_id_path)"'","secret_id":"'"$(cat $secret_id_path)"'"}' \
-  $vault_addr/v1/auth/approle/login | tee \
-  >(jq --raw-output '.auth.client_token' > ${client_token_path}) \
-  > /dev/null
+  $vault_addr/v1/auth/approle/login |  \
+  jq --raw-output '.auth.client_token' )
+  echo "VAULT_TOKEN=${client_token}" > $client_token_path
   exit 0
 fi

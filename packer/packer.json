@@ -129,7 +129,8 @@
            "sudo mv /tmp/authorized_keys /home/{{user `atlas_username`}}/.ssh/authorized_keys",
            "sudo chown -R {{user `atlas_username`}}:{{user `atlas_username`}} /home/{{user `atlas_username`}}/.ssh/",
            "sudo chmod 700 /home/{{user `atlas_username`}}/.ssh/",
-           "sudo chmod 600 /home/{{user `atlas_username`}}/.ssh/authorized_keys"
+           "sudo chmod 600 /home/{{user `atlas_username`}}/.ssh/authorized_keys",
+           "sudo mv /tmp/files /root"
             ]
     }
   ],

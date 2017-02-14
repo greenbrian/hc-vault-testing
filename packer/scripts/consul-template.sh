@@ -31,22 +31,5 @@ KillSignal=SIGINT
 WantedBy=multi-user.target
 EOF
 
-sudo bash -c "cat >/etc/systemd/system/consul-template.service" << 'EOF'
-[Unit]
-Description=consul-template agent
-Requires=network-online.target
-After=network-online.target consul.service
-
-[Service]
-EnvironmentFile=/ramdisk/client_token
-Restart=on-failure
-ExecStart=/usr/local/bin/consul-template -config=/etc/systemd/system/consul-template.d/consul-template.json $client_token
-KillSignal=SIGINT
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-
 
 sudo chmod 0644 /etc/systemd/system/consul-template.service

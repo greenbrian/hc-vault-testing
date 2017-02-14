@@ -88,8 +88,7 @@
     {
       "type": "file",
       "source": "files",
-      "destination": "/tmp",
-      "only": ["consul-vault"]
+      "destination": "/tmp"
     },
     {
       "type": "shell",

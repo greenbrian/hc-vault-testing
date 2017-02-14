@@ -65,7 +65,7 @@ resource "aws_instance" "consul-vault" {
   provisioner "remote-exec" {
     inline = [
       "sudo chmod +x /tmp/vault_init_and_unseal.sh",
-      "echo /tmp/vault_init_and_unseal.sh | at now + 2 min",
+      "echo /tmp/vault_init_and_unseal.sh | at now + 3 min",
     ]
   }
 }

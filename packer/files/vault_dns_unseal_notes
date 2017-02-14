@@ -1,9 +1,3 @@
-#!/usr/bin/env bash
-
-set -e
-
-echo "Saving some usage notes..."
-sudo bash -c "cat >/root/notes" << EOF
 
 DNSmasq is setup to handle all *.consul dns requests by forwarding those requests to
 the local Consul agent running on port 8600
@@ -32,6 +26,3 @@ click on node, see services and active/standby will be shown for vault
   Ms8iEu7aM27PCGm3mm4bELtNoGMrlAiHTNwHLZ8k+QYD
   gqtQDrYPV2qQZ95dxH8DtWUed9rz4YYglwKfbfFff5gE
   keB577P80bM2zJQtDOkzhgYZ80KU9kr4zJNfyZiMVdQF
-
-
-EOF

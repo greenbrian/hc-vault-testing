@@ -87,6 +87,12 @@
       ]
     },
     {
+      "type": "file",
+      "source": "/files",
+      "destination": "/tmp",
+      "only": ["consul-vault"]
+    },
+    {
       "type": "shell",
       "scripts": [
         "scripts/vault.sh"

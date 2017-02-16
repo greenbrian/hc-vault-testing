@@ -94,7 +94,7 @@ resource "aws_instance" "nginx" {
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl enable consul-template.service",
-      "sudo systemctl start consul"
+      "sudo systemctl start consul-template"
     ]
   }
 

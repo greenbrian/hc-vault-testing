@@ -47,7 +47,7 @@ if vault status | grep active > /dev/null; then
   vault auth-enable approle
 
   # write some example secrets
-  vault write secret/waycoolapp User1SSN="200-23-9930" User2SSN="000-00-0002" ttl=300s
+  vault write secret/waycoolapp User1SSN="200-23-9930" User2SSN="000-00-0002" ttl=60s
 
   # create policy named 'waycoolapp'
   echo '
@@ -62,13 +62,37 @@ if vault status | grep active > /dev/null; then
   }
   ' | vault policy-write waycoolapp -
 
+  # create policy named 'admin-waycoolapp'
+  echo '
+  path "sys/mounts" {
+    capabilities = ["list","read"]
+  }
+  path "secret/*" {
+    capabilities = ["list", "read"]
+  }
+  path "secret/waycoolapp*" {
+    capabilities = ["create", "read", "update", "delete", "list"]
+  }
+  path "secret/bgreen" {
+    capabilities = ["create", "read", "update", "delete", "list"]
+  }
+  path "supersecret/*" {
+    capabilities = ["list", "read"]
+  }' | vault policy-write admin-waycoolapp -
+
+  # setup userpass for a personal login
+  vault auth-enable userpass
+
+  # create my credentials
+  vault write auth/userpass/users/bgreen password=test policies="admin-waycoolapp"
+
   # create approle for 'waycoolapp' with above policy and approle specific parameters
   vault write auth/approle/role/waycoolapp secret_id_num_uses=1000 period=3600 policies=waycoolapp
 
   # read role_id for our approle
   vault read auth/approle/role/waycoolapp/role-id | grep role_id | awk '{print $2}' > /tmp/role_id
 
-  # retreive secret_id for our approle, and subsequently upload to consul for retrieval
+  # retrieve secret_id for our approle, and subsequently upload to consul for retrieval
   # DEMO PURPOSES ONLY - NOT RECOMMENDED
   vault write -format=json -f auth/approle/role/waycoolapp/secret-id | tee \
   >(jq --raw-output '.data.secret_id' > /tmp/secret_id) \

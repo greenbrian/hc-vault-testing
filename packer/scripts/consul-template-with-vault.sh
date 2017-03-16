@@ -23,7 +23,7 @@ Requires=network-online.target
 After=network-online.target consul.service
 
 [Service]
-EnvironmentFile=/ramdisk/client_token
+EnvironmentFile=-/ramdisk/client_token
 Restart=on-failure
 ExecStart=/usr/local/bin/consul-template -config=/etc/systemd/system/consul-template.d/consul-template.json $client_token
 KillSignal=SIGINT

@@ -24,7 +24,7 @@ SECRET
 
 echo "Creating Template for private key..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/cert.ctmpl" << CERT
-{{ with secret "pki/issue/example-dot-com" "common_name=foo.example.com" }}
+{{ with secret "vault-ca-intermediate/issue/example-dot-com" "common_name=foo.example.com" }}
 {{ .Data.certificate }}
 {{ .Data.ca_chain }}
 {{ .Data.private_key }}

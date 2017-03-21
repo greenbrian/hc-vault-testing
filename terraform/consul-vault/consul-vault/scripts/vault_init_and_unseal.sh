@@ -113,7 +113,7 @@ pki_setup() {
 
 
   # Mount Root CA and generate cert
-  vault unmount ${RootCAName} $> /dev/null || true
+  vault unmount ${RootCAName} &> /dev/null || true
   vault mount -path ${RootCAName} pki
   vault mount-tune -max-lease-ttl=87600h ${RootCAName}
   vault write -format=json ${RootCAName}/root/generate/internal \

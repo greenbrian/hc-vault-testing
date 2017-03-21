@@ -5,6 +5,7 @@ sudo apt-get install -y -q haproxy
 
 echo "Configuring HAProxy firewall rules..."
 sudo iptables -I INPUT -s 0/0 -p tcp --dport 80 -j ACCEPT
+sudo iptables -I INPUT -s 0/0 -p tcp --dport 443 -j ACCEPT
 sudo netfilter-persistent save
 sudo netfilter-persistent reload
 
@@ -39,6 +40,7 @@ backend http_back
    server {{.Node}} {{.Address}}:{{.Port}} check{{end}}
 
 frontend https_front
+   mode tcp
    bind *:443
    default_backend https_back
 

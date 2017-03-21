@@ -20,16 +20,27 @@ SECRET
 
 
 
-
-
 echo "Creating Template for private key..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/cert.ctmpl" << CERT
 {{ with secret "vault-ca-intermediate/issue/example-dot-com" "common_name=foo.example.com" }}
 {{ .Data.certificate }}
-{{ .Data.ca_chain }}
 {{ .Data.private_key }}
 {{ end }}
 CERT
+
+echo "Creating cert output manipulation script for Consul-template..."
+sudo bash -c "cat >/etc/systemd/system/consul-template.d/cert.sh" << CERT
+#!/usr/bin/env bash
+
+# export cert chain
+sed '/BEGIN RSA PRIVATE KEY/,$d' /etc/systemd/system/consul-template.d/tempcert > /etc/nginx/ssl/example.com.crt
+# dump private key
+sed -n -e "/BEGIN RSA PRIVATE KEY/,\$p" /etc/systemd/system/consul-template.d/tempcert > /etc/nginx/ssl/private.key
+
+service nginx restart
+CERT
+
+sudo chmod +x /etc/systemd/system/consul-template.d/cert.sh
 
 echo "Install Consul template configuration file for secret page..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/consul-template.json" << EOF
@@ -58,7 +69,8 @@ vault {
 
 template {
   source = "/etc/systemd/system/consul-template.d/templates/cert.ctmpl"
-  destination = "/etc/nginx/ssl/example.com.crt"
+  destination = "/etc/systemd/system/consul-template.d/tempcert"
+  command = "/etc/systemd/system/consul-template.d/cert.sh"
 }
 
 

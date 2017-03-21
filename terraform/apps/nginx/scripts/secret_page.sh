@@ -19,6 +19,18 @@ sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/secret.html.c
 SECRET
 
 
+
+
+
+echo "Creating Template for private key..."
+sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/cert.ctmpl" << CERT
+{{ with secret "pki/issue/example-dot-com" "common_name=foo.example.com" }}
+{{ .Data.certificate }}
+{{ .Data.ca_chain }}
+{{ .Data.private_key }}
+{{ end }}
+CERT
+
 echo "Install Consul template configuration file for secret page..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/consul-template.json" << EOF
 
@@ -42,6 +54,13 @@ vault {
     backoff = "250ms"
   }
 }
+
+
+template {
+  source = "/etc/systemd/system/consul-template.d/templates/cert.ctmpl"
+  destination = "/etc/nginx/ssl/example.com.crt"
+}
+
 
 template {
   source = "/etc/systemd/system/consul-template.d/templates/secret.html.ctmpl"

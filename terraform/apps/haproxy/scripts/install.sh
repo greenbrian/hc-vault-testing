@@ -41,6 +41,33 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/haproxy.json" << HAPROXY
 }
 HAPROXY
 
+sudo bash -c "cat >/etc/systemd/system/consul.d/haproxy-ssl.json" << HAPROXY-SSL
+{"service": {
+  "name": "haproxy-ssl",
+  "tags": ["web"],
+  "port": 443,
+    "checks": [
+      {
+        "id": "GET",
+        "script": "curl localhost >/dev/null 2>&1",
+        "interval": "10s"
+      },
+      {
+        "id": "HTTPS-TCP",
+        "name": "HTTPS TCP on port 443",
+        "tcp": "localhost:443",
+        "interval": "10s",
+        "timeout": "1s"
+      },
+        {
+        "id": "OS service status",
+        "script": "service haproxy status",
+        "interval": "30s"
+      }]
+    }
+}
+HAPROXY-SSL
+
 
 sudo bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
 {

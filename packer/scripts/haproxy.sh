@@ -37,6 +37,15 @@ frontend http_front
 backend http_back
    balance roundrobin{{range service "nginx"}}
    server {{.Node}} {{.Address}}:{{.Port}} check{{end}}
+
+frontend https_front
+   bind *:443
+   default_backend https_back
+
+backend https_back
+   mode tcp
+   balance roundrobin{{range service "nginx-ssl"}}
+   server {{.Node}} {{.Address}}:{{.Port}} check{{end}}
 HAPROXY
 
 echo "Configuring Consul Template for HAProxy..."

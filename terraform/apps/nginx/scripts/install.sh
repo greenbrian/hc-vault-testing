@@ -78,6 +78,33 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/nginx.json" << NGINX
 }
 NGINX
 
+sudo bash -c "cat >/etc/systemd/system/consul.d/nginx-ssl.json" << NGINX-SSL
+{"service": {
+  "name": "nginx-ssl",
+  "tags": ["web"],
+  "port": 443,
+    "checks": [
+      {
+        "id": "GET",
+        "script": "curl localhost >/dev/null 2>&1",
+        "interval": "10s"
+      },
+      {
+        "id": "HTTPS-TCP",
+        "name": "HTTPS TCP on port 443",
+        "tcp": "localhost:443",
+        "interval": "10s",
+        "timeout": "1s"
+      },
+        {
+        "id": "OS service status",
+        "script": "service nginx status",
+        "interval": "30s"
+      }]
+    }
+}
+NGINX-SSL
+
 sudo bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
 {
     "checks": [

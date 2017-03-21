@@ -46,6 +46,14 @@ resource "aws_security_group" "hcvt" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # HTTPS access from anywhere
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Consul communication
   ingress {
     from_port   = 8300

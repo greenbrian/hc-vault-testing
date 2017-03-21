@@ -29,7 +29,7 @@ sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/cert.ctmpl" <
 CERT
 
 echo "Creating cert output manipulation script for Consul-template..."
-sudo bash -c "cat >/etc/systemd/system/consul-template.d/cert.sh" << CERT
+sudo bash -c "cat >/etc/systemd/system/consul-template.d/cert.sh" <<'CERT'
 #!/usr/bin/env bash
 
 # export cert chain

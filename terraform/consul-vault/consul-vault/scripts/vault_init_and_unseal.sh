@@ -6,8 +6,7 @@ export VAULT_ADDR=http://127.0.0.1:8200
 # PKI specific variables
 RootCAName="vault-ca-root"
 IntermCAName="vault-ca-intermediate"
-certs_dir="/tmp/certs"
-sudo mkdir -p ${certs_dir}
+sudo mkdir -p /tmp/certs/
 
 cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 
@@ -117,10 +116,10 @@ pki_setup() {
   vault mount -path ${RootCAName} pki
   vault mount-tune -max-lease-ttl=87600h ${RootCAName}
   vault write -format=json ${RootCAName}/root/generate/internal \
-    common_name="${RootCAName}" ttl=87600h | tee \
-    >(jq -r .data.certificate > $certs_dir/ca.pem) \
-    >(jq -r .data.issuing_ca > $certs_dir/issuing_ca.pem) \
-    >(jq -r .data.private_key > $certs_dir/ca-key.pem)
+  common_name="${RootCAName}" ttl=87600h |
+  tee >(jq -r .data.certificate > /tmp/certs/ca.pem) \
+  >(jq -r .data.issuing_ca > /tmp/certs/issuing_ca.pem) \
+  >(jq -r .data.private_key > /tmp/certs/ca-key.pem)
 
   # Mount Intermediate and set cert
   vault unmount ${IntermCAName} &> /dev/null || true
@@ -128,16 +127,16 @@ pki_setup() {
   vault mount-tune -max-lease-ttl=87600h ${IntermCAName}
   vault write -format=json ${IntermCAName}/intermediate/generate/internal \
     common_name="${IntermCAName}" ttl=43800h | tee \
-    >(jq -r .data.csr > $certs_dir/${IntermCAName}.csr) \
-    >(jq -r .data.private_key > $certs_dir/${IntermCAName}.pem)
+    >(jq -r .data.csr > /tmp/certs/${IntermCAName}.csr) \
+    >(jq -r .data.private_key > /tmp/certs/${IntermCAName}.pem)
 
   # Sign the intermediate certificate and set it
   vault write -format=json ${RootCAName}/root/sign-intermediate \
-    csr=@$certs_dir/${IntermCAName}.csr \
+    csr=@/tmp/certs/${IntermCAName}.csr \
     common_name="${IntermCAName}" ttl=43800h | tee \
-    >(jq -r .data.certificate > $certs_dir/${IntermCAName}.pem) \
-    >(jq -r .data.issuing_ca > $certs_dir/${IntermCAName}_issuing_ca.pem)
-  vault write ${IntermCAName}/intermediate/set-signed certificate=@$certs_dir/${IntermCAName}.pem
+    >(jq -r .data.certificate > /tmp/certs/${IntermCAName}.pem) \
+    >(jq -r .data.issuing_ca > /tmp/certs/${IntermCAName}_issuing_ca.pem)
+  vault write ${IntermCAName}/intermediate/set-signed certificate=@/tmp/certs/${IntermCAName}.pem
 
   # Generate the roles
   vault write ${IntermCAName}/roles/example-dot-com allow_any_name=true max_ttl="1m"

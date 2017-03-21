@@ -49,7 +49,7 @@ policy_setup() {
   echo "
   path \"${IntermCAName}/issue*\" {
     capabilities = [\"create\",\"update\"]
-
+  }
   path \"secret/waycoolapp*\" {
     capabilities = [\"read\"]
   }

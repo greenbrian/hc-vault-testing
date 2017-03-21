@@ -116,26 +116,16 @@ pki_setup() {
   vault mount -path ${RootCAName} pki
   vault mount-tune -max-lease-ttl=87600h ${RootCAName}
   vault write -format=json ${RootCAName}/root/generate/internal \
-  common_name="${RootCAName}" ttl=87600h |
-  tee >(jq -r .data.certificate > /tmp/certs/ca.pem) \
-  >(jq -r .data.issuing_ca > /tmp/certs/issuing_ca.pem) \
-  >(jq -r .data.private_key > /tmp/certs/ca-key.pem)
+  common_name="${RootCAName}" ttl=87600h | tee >(jq -r .data.certificate > /tmp/certs/ca.pem) >(jq -r .data.issuing_ca > /tmp/certs/issuing_ca.pem) >(jq -r .data.private_key > /tmp/certs/ca-key.pem)
 
   # Mount Intermediate and set cert
   vault unmount ${IntermCAName} &> /dev/null || true
   vault mount -path ${IntermCAName} pki
   vault mount-tune -max-lease-ttl=87600h ${IntermCAName}
-  vault write -format=json ${IntermCAName}/intermediate/generate/internal \
-    common_name="${IntermCAName}" ttl=43800h | tee \
-    >(jq -r .data.csr > /tmp/certs/${IntermCAName}.csr) \
-    >(jq -r .data.private_key > /tmp/certs/${IntermCAName}.pem)
+  vault write -format=json ${IntermCAName}/intermediate/generate/internal common_name="${IntermCAName}" ttl=43800h | tee >(jq -r .data.csr > /tmp/certs/${IntermCAName}.csr) >(jq -r .data.private_key > /tmp/certs/${IntermCAName}.pem)
 
   # Sign the intermediate certificate and set it
-  vault write -format=json ${RootCAName}/root/sign-intermediate \
-    csr=@/tmp/certs/${IntermCAName}.csr \
-    common_name="${IntermCAName}" ttl=43800h | tee \
-    >(jq -r .data.certificate > /tmp/certs/${IntermCAName}.pem) \
-    >(jq -r .data.issuing_ca > /tmp/certs/${IntermCAName}_issuing_ca.pem)
+  vault write -format=json ${RootCAName}/root/sign-intermediate csr=@/tmp/certs/${IntermCAName}.csr common_name="${IntermCAName}" ttl=43800h | tee >(jq -r .data.certificate > /tmp/certs/${IntermCAName}.pem) >(jq -r .data.issuing_ca > /tmp/certs/${IntermCAName}_issuing_ca.pem)
   vault write ${IntermCAName}/intermediate/set-signed certificate=@/tmp/certs/${IntermCAName}.pem
 
   # Generate the roles

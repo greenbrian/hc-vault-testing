@@ -20,7 +20,7 @@ server {
     listen [::]:80 default_server;
     listen 443 ssl default_server;
     ssl_certificate     /etc/nginx/ssl/example.com.crt;
-    ssl_certificate_key /etc/nginx/ssl/private.key;
+    ssl_certificate_key /etc/nginx/ssl/example.com.crt;
 
     root /var/www/html;
 

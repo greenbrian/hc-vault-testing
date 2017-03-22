@@ -13,7 +13,7 @@ sudo iptables -I INPUT -s 0/0 -p tcp --dport 443 -j ACCEPT
 sudo netfilter-persistent save
 sudo netfilter-persistent reload
 
-sudo bash -c "cat >/etc/nginx/sites-available/default" << SECRET
+sudo bash -c "cat >/etc/nginx/sites-available/default" <<'SECRET'
 
 server {
     listen 80 default_server;

@@ -110,7 +110,6 @@ approle_setup() {
 
 pki_setup() {
 
-
   # Mount Root CA and generate cert
   vault unmount ${RootCAName} &> /dev/null || true
   vault mount -path ${RootCAName} pki
@@ -130,9 +129,6 @@ pki_setup() {
 
   # Generate the roles
   vault write ${IntermCAName}/roles/example-dot-com allow_any_name=true max_ttl="1m"
-
-  # concatenate CA certs for chain
-
 
 }
 if vault status | grep active > /dev/null; then

@@ -16,24 +16,24 @@ sudo netfilter-persistent reload
 sudo bash -c "cat >/etc/nginx/sites-available/default" << SECRET
 
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-  listen 443 ssl default_server;
-  ssl_certificate     /etc/nginx/ssl/example.com.crt;
-  ssl_certificate_key /etc/nginx/ssl/private.key;
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 443 ssl default_server;
+    ssl_certificate     /etc/nginx/ssl/example.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/private.key;
 
-	root /var/www/html;
+    root /var/www/html;
 
-	# Add index.php to the list if you are using PHP
-	index index.html index.htm index.nginx-debian.html;
+    # Add index.php to the list if you are using PHP
+    index index.html index.htm index.nginx-debian.html secret.html;
 
-	server_name _;
+    server_name _;
 
-	location / {
-		# First attempt to serve request as file, then
-		# as directory, then fall back to displaying a 404.
-		try_files $uri $uri/ =404;
-	}
+    location / {
+       # First attempt to serve request as file, then
+       # as directory, then fall back to displaying a 404.
+       try_files $uri $uri/ =404;
+     }
 
 }
 

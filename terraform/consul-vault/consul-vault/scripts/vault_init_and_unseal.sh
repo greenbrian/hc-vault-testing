@@ -40,6 +40,7 @@ vault unseal $(cget unseal-key-2)
 vault unseal $(cget unseal-key-3)
 
 logger "$0 - Vault setup complete"
+sleep 25s
 
 
 policy_setup() {

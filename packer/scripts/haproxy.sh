@@ -48,6 +48,13 @@ backend https_back
    mode tcp
    balance roundrobin{{range service "nginx-ssl"}}
    server {{.Node}} {{.Address}}:{{.Port}} check{{end}}
+
+listen vault
+   bind 0.0.0.0:8200
+   balance roundrobin
+   option httpchk GET /v1/sys/health{{range service "vault"}}
+   server {{.Node}} {{.Address}}:{{.Port}} check{{end}}
+
 HAPROXY
 
 echo "Configuring Consul Template for HAProxy..."

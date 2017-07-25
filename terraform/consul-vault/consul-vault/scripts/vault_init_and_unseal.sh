@@ -78,6 +78,13 @@ policy_setup() {
   path "supersecret/*" {
     capabilities = ["list", "read"]
   }' | vault policy-write admin-waycoolapp -
+  
+  # create vault-admin policy  
+  echo '
+  path "*" {
+      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+  }' | vault policy-write vault-admin -
+  
 }
 
 admin_setup() {
@@ -86,6 +93,8 @@ admin_setup() {
   vault auth-enable userpass
   # create my credentials
   vault write auth/userpass/users/bgreen password=test policies="admin-waycoolapp"
+  # create vault user admin credentials
+  vault write auth/userpass/users/vault password=vault policies="vault-admin"
 }
 
 approle_setup() {

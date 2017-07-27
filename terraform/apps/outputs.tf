@@ -2,6 +2,10 @@ output "nginx_addresses" {
   value = "${module.nginx.nginx_addresses}"
 }
 
+output "ngninx_openssl_check" {
+  value = "${module.nginx.nginx_cert_check}"
+}
+
 output "haproxy_address" {
   value = "${module.haproxy.haproxy_address}"
 }

@@ -7,9 +7,8 @@ module "network" {
 }
 
 module "consul-vault" {
-  source              = "./consul-vault"
-  user                = "${var.user}"
-  consul_server_count = 3
-  subnet_id           = "${module.network.subnet_id}"
-  hcvt_sg_id          = "${module.network.hcvt_sg_id}"
+  source     = "./consul-vault"
+  user       = "${var.user}"
+  subnet_id  = "${module.network.subnet_id}"
+  hcvt_sg_id = "${module.network.hcvt_sg_id}"
 }

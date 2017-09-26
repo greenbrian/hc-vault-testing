@@ -20,12 +20,14 @@ chown root:root /etc/default/consul
 chmod 0644 /etc/default/consul
 
 new_hostname=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-sudo hostname $new_hostname
+# set the hostname (before starting consul and nomad)
+hostnamectl set-hostname "$${new_hostname}"
+
 sudo bash -c "cat >>/etc/hosts" << HOSTS
-127.0.1.1 $new_hostname
+127.0.1.1 $${new_hostname}
 HOSTS
 sudo bash -c "cat >>/etc/hosts" << NEWHOSTNAME
-$new_hostname
+$${new_hostname}
 NEWHOSTNAME
 
 
@@ -58,12 +60,12 @@ if [ ! $(cget root-token) ]; then
   # Store master keys in consul for operator to retrieve and remove
   COUNTER=1
   grep 'Unseal' /tmp/vault.init | awk '{print $4}' | for key in $(cat -); do
-    curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/unseal-key-$COUNTER -d $key
+    curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/unseal-key-$${COUNTER} -d $${key}
     COUNTER=$((COUNTER + 1))
   done
 
   export ROOT_TOKEN=$(grep 'Root' /tmp/vault.init | awk '{print $4}')
-  curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/root-token -d $ROOT_TOKEN
+  curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/root-token -d $${ROOT_TOKEN}
 
   echo "Remove master keys from disk"
   #shred /tmp/vault.init
@@ -88,7 +90,7 @@ policy_setup() {
   logger "$0 - Configuring Vault Policies"
   # create policy named 'waycoolapp'
   echo "
-  path \"${IntermCAName}/issue*\" {
+  path \"$${IntermCAName}/issue*\" {
     capabilities = [\"create\",\"update\"]
   }
   path \"secret/waycoolapp*\" {
@@ -162,24 +164,24 @@ approle_setup() {
 pki_setup() {
 
   # Mount Root CA and generate cert
-  vault unmount ${RootCAName} &> /dev/null || true
-  vault mount -path ${RootCAName} pki
-  vault mount-tune -max-lease-ttl=87600h ${RootCAName}
-  vault write -format=json ${RootCAName}/root/generate/internal \
-  common_name="${RootCAName}" ttl=87600h | tee >(jq -r .data.certificate > /tmp/certs/ca.pem) >(jq -r .data.issuing_ca > /tmp/certs/issuing_ca.pem) >(jq -r .data.private_key > /tmp/certs/ca-key.pem)
+  vault unmount $${RootCAName} &> /dev/null || true
+  vault mount -path $${RootCAName} pki
+  vault mount-tune -max-lease-ttl=87600h $${RootCAName}
+  vault write -format=json $${RootCAName}/root/generate/internal \
+  common_name="$${RootCAName}" ttl=87600h | tee >(jq -r .data.certificate > /tmp/certs/ca.pem) >(jq -r .data.issuing_ca > /tmp/certs/issuing_ca.pem) >(jq -r .data.private_key > /tmp/certs/ca-key.pem)
 
   # Mount Intermediate and set cert
-  vault unmount ${IntermCAName} &> /dev/null || true
-  vault mount -path ${IntermCAName} pki
-  vault mount-tune -max-lease-ttl=87600h ${IntermCAName}
-  vault write -format=json ${IntermCAName}/intermediate/generate/internal common_name="${IntermCAName}" ttl=43800h | tee >(jq -r .data.csr > /tmp/certs/${IntermCAName}.csr) >(jq -r .data.private_key > /tmp/certs/${IntermCAName}.pem)
+  vault unmount $${IntermCAName} &> /dev/null || true
+  vault mount -path $${IntermCAName} pki
+  vault mount-tune -max-lease-ttl=87600h $${IntermCAName}
+  vault write -format=json $${IntermCAName}/intermediate/generate/internal common_name="$${IntermCAName}" ttl=43800h | tee >(jq -r .data.csr > /tmp/certs/$${IntermCAName}.csr) >(jq -r .data.private_key > /tmp/certs/$${IntermCAName}.pem)
 
   # Sign the intermediate certificate and set it
-  vault write -format=json ${RootCAName}/root/sign-intermediate csr=@/tmp/certs/${IntermCAName}.csr common_name="${IntermCAName}" ttl=43800h | tee >(jq -r .data.certificate > /tmp/certs/${IntermCAName}.pem) >(jq -r .data.issuing_ca > /tmp/certs/${IntermCAName}_issuing_ca.pem)
-  vault write ${IntermCAName}/intermediate/set-signed certificate=@/tmp/certs/${IntermCAName}.pem
+  vault write -format=json $${RootCAName}/root/sign-intermediate csr=@/tmp/certs/$${IntermCAName}.csr common_name="$${IntermCAName}" ttl=43800h | tee >(jq -r .data.certificate > /tmp/certs/$${IntermCAName}.pem) >(jq -r .data.issuing_ca > /tmp/certs/$${IntermCAName}_issuing_ca.pem)
+  vault write $${IntermCAName}/intermediate/set-signed certificate=@/tmp/certs/$${IntermCAName}.pem
 
   # Generate the roles
-  vault write ${IntermCAName}/roles/example-dot-com allow_any_name=true max_ttl="1m"
+  vault write $${IntermCAName}/roles/example-dot-com allow_any_name=true max_ttl="1m"
 
 }
 if vault status | grep active > /dev/null; then

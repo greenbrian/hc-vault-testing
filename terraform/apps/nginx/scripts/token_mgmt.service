@@ -1,8 +1,0 @@
-[Unit]
-Description=Token Management script for Vault & Consul-template
-
-[Service]
-Type=simple
-ExecStart=/usr/local/bin/token_mgmt.sh
-User=root
-Group=root

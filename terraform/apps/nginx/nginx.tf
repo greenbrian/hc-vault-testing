@@ -22,80 +22,27 @@ resource "aws_instance" "nginx" {
     env = "hcvt-demo"
   }
 
-  connection {
-    user        = "${var.user}"
-    private_key = "${var.priv_key}"
-  }
+  iam_instance_profile = "${aws_iam_instance_profile.consul-nginx.id}"
 
-  provisioner "remote-exec" {
-    inline = [
-      "echo ${var.primary_consul} > /tmp/consul-server-addr",
-    ]
-  }
+  user_data = "${data.template_file.nginx-setup.rendered}"
+}
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo mkdir /ramdisk",
-      "sudo mount -t tmpfs -o size=20M,mode=700 tmpfs /ramdisk"
-    ]
-  }
+data "template_file" "nginx-setup" {
+  template = "${file("${path.module}/nginx.tpl")}"
+}
 
-  provisioner "remote-exec" {
-    scripts = [
-      "${path.module}/scripts/install.sh",
-      "${path.module}/scripts/secret_page.sh"
-    ]
-  }
+resource "aws_iam_role" "consul-nginx" {
+  name               = "consul-self-assemble"
+  assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
+}
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo systemctl enable consul.service",
-      "sudo systemctl start consul",
-    ]
-  }
+resource "aws_iam_role_policy" "consul-nginx" {
+  name   = "SelfAssembly"
+  role   = "${aws_iam_role.consul-nginx.id}"
+  policy = "${data.aws_iam_policy_document.consul-nginx.json}"
+}
 
-  provisioner "file" {
-    source      = "${path.module}/scripts/token_mgmt.sh"
-    destination = "/tmp/token_mgmt.sh"
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/scripts/token_mgmt.service"
-    destination = "/tmp/token_mgmt.service"
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/scripts/token_mgmt.timer"
-    destination = "/tmp/token_mgmt.timer"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo mv /tmp/token_mgmt.sh /usr/local/bin/token_mgmt.sh",
-      "sudo chmod +x /usr/local/bin/token_mgmt.sh",
-      "sudo mv /tmp/token_mgmt.service /lib/systemd/system/token_mgmt.service",
-      "sudo mv /tmp/token_mgmt.timer /lib/systemd/system/token_mgmt.timer",
-      "sudo systemctl start token_mgmt.timer",
-      "sudo systemctl enable token_mgmt.timer"
-    ]
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/scripts/token_fetcher.sh"
-    destination = "/tmp/token_fetcher.sh"
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chmod +x /tmp/token_fetcher.sh",
-      "echo /tmp/token_fetcher.sh | at now + 1 min",
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo systemctl enable consul-template.service",
-      "sudo systemctl start consul-template"
-    ]
-  }
-
+resource "aws_iam_instance_profile" "consul-nginx" {
+  name = "consul-nginx"
+  role = "${aws_iam_role.consul-vault.id}"
 }

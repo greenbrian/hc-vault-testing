@@ -21,51 +21,14 @@ resource "aws_instance" "consul-vault" {
     env = "hcvt-demo"
   }
 
-  connection {
-    user        = "${var.user}"
-    private_key = "${var.priv_key}"
-  }
+  user_data = "${data.template_file.vault-setup.rendered}"
+}
 
-  provisioner "remote-exec" {
-    inline = [
-      "echo ${var.consul_server_count} > /tmp/consul-server-count",
-      "echo ${aws_instance.consul-vault.0.private_dns} > /tmp/consul-server-addr",
-    ]
-  }
+data "template_file" "vault-setup" {
+  template = "${file("${path.module}/scripts/vault-setup.tpl")}"
 
-  provisioner "remote-exec" {
-    scripts = [
-      "${path.module}/scripts/install.sh",
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo systemctl enable consul.service",
-      "sudo systemctl start consul",
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo systemctl enable vault.service",
-      "sudo systemctl start vault",
-    ]
-  }
-
-  /*  ###################   WARNING    #########################  */
-  /* The following steps are not recommended for production usage */
-  /* The script will initialize your vault and store the secret   */
-  /* keys insecurely and is only used for demonstration purposes  */
-
-  provisioner "file" {
-    source      = "${path.module}/scripts/vault_init_and_unseal.sh"
-    destination = "/tmp/vault_init_and_unseal.sh"
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chmod +x /tmp/vault_init_and_unseal.sh",
-      "echo /tmp/vault_init_and_unseal.sh | at now + 4 min",
-    ]
+  vars = {
+    consul_server_count = "${var.consul_server_count}"
+    consul_server_addr  = "${aws_instance.consul-vault.0.private_dns}"
   }
 }

@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-echo ${consul_server_count} > /tmp/consul-server-count
-echo ${consul_server_addr} > /tmp/consul-server-addr
-
-# Read from the files we created
-SERVER_COUNT=$(cat /tmp/consul-server-count | tr -d '\n')
-CONSUL_JOIN=$(cat /tmp/consul-server-addr | tr -d '\n')
 
 sudo bash -c "cat >/etc/default/consul" << EOF
 CONSUL_FLAGS="\
 -server \
--bootstrap-expect=${SERVER_COUNT} \
--join=${CONSUL_JOIN} \
+-bootstrap-expect=3 \
+-retry-join-ec2-tag-key=env \
+-retry-join-ec2-tag-value=hcvt-demo \
 -data-dir=/opt/consul/data \
 -client 0.0.0.0 -ui"
 EOF

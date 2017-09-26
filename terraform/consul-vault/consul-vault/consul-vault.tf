@@ -15,6 +15,8 @@ resource "aws_instance" "consul-vault" {
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = ["${var.hcvt_sg_id}"]
 
+  iam_instance_profile = "${aws_iam_instance_profile.consul-vault.id}"
+
   tags = {
     env = "hcvt-demo"
   }
@@ -24,9 +26,20 @@ resource "aws_instance" "consul-vault" {
 
 data "template_file" "vault-setup" {
   template = "${file("${path.module}/scripts/vault-setup.tpl")}"
+}
 
-  vars = {
-    consul_server_count = "3"
-    consul_server_addr  = "${aws_instance.consul-vault.0.private_dns}"
-  }
+resource "aws_iam_role" "consul-vault" {
+  name               = "consul-vault-self-assemble"
+  assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
+}
+
+resource "aws_iam_role_policy" "consul-vault" {
+  name   = "SelfAssembly"
+  role   = "${aws_iam_role.consul-vault.id}"
+  policy = "${data.aws_iam_policy_document.consul-vault.json}"
+}
+
+resource "aws_iam_instance_profile" "consul-vault" {
+  name = "consul-vault"
+  role = "${aws_iam_role.consul-vault.id}"
 }

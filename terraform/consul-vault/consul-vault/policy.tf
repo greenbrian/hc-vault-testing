@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "consul_vault" {
+data "aws_iam_policy_document" "consul-vault" {
   statement {
     sid       = "AllowSelfAssembly"
     effect    = "Allow"

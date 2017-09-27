@@ -4,7 +4,7 @@ set -e
 mkdir /ramdisk
 mount -t tmpfs -o size=20M,mode=700 tmpfs /ramdisk
 
-sudo bash -c "cat >/etc/default/consul" << EOF
+bash -c "cat >/etc/default/consul" << EOF
 CONSUL_FLAGS="\
 -retry-join-ec2-tag-key=env \
 -retry-join-ec2-tag-value=hcvt-demo \
@@ -15,7 +15,7 @@ chown root:root /etc/default/consul
 chmod 0644 /etc/default/consul
 
 echo "Configuring Vault environment..."
-sudo bash -c "cat >/etc/profile.d/vault.sh" << 'VAULTENV'
+bash -c "cat >/etc/profile.d/vault.sh" << 'VAULTENV'
 export VAULT_ADDR=http://active.vault.service.dc1.consul:8200
 if [ "`id -u`" -eq 0 ]; then
   export VAULT_TOKEN=$(cat /ramdisk/client_token)
@@ -33,7 +33,7 @@ TIME_STAMP="Updated on $${RIGHT_NOW} by $${USER}"
 AWSPUBHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname)
 AWSPUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 
-sudo bash -c "cat >/var/www/html/index.nginx-debian.html" << EOF
+bash -c "cat >/var/www/html/index.nginx-debian.html" << EOF
   <html>
   <head>
       <title>$TITLE</title>
@@ -52,7 +52,7 @@ sudo bash -c "cat >/var/www/html/index.nginx-debian.html" << EOF
 EOF
 
 # register services and checks in consul
-sudo bash -c "cat >/etc/systemd/system/consul.d/nginx.json" << NGINX
+bash -c "cat >/etc/systemd/system/consul.d/nginx.json" << NGINX
 {"service": {
   "name": "nginx",
   "tags": ["web"],
@@ -79,7 +79,7 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/nginx.json" << NGINX
 }
 NGINX
 
-sudo bash -c "cat >/etc/systemd/system/consul.d/nginx-ssl.json" << NGINX-SSL
+bash -c "cat >/etc/systemd/system/consul.d/nginx-ssl.json" << NGINX-SSL
 {"service": {
   "name": "nginx-ssl",
   "tags": ["web"],
@@ -106,7 +106,7 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/nginx-ssl.json" << NGINX-SSL
 }
 NGINX-SSL
 
-sudo bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
+bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
 {
     "checks": [
       {
@@ -133,7 +133,7 @@ SYSTEM
 
 new_hostname=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
 sudo hostname $${new_hostname}
-sudo bash -c "cat >>/etc/hosts" << HOSTS
+bash -c "cat >>/etc/hosts" << HOSTS
 127.0.1.1 $new_hostname
 HOSTS
 sudo bash -c "cat >>/etc/hosts" << NEWHOSTNAME
@@ -145,7 +145,7 @@ NEWHOSTNAME
 
 
 echo "Creating Template for SECRET PAGE..."
-sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/secret.html.ctmpl" << SECRET
+bash -c "cat >/etc/systemd/system/consul-template.d/templates/secret.html.ctmpl" << SECRET
   <html>
   <head>
       <title>SECRET PAGE</title>
@@ -162,7 +162,7 @@ sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/secret.html.c
 SECRET
 
 echo "Creating Template for private key..."
-sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/cert.ctmpl" << CERT
+bash -c "cat >/etc/systemd/system/consul-template.d/templates/cert.ctmpl" << CERT
 {{ with secret "vault-ca-intermediate/issue/example-dot-com" "common_name=foo.example.com" }}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
@@ -173,7 +173,7 @@ CERT
 sudo chmod +x /etc/systemd/system/consul-template.d/templates/cert.ctmpl
 
 echo "Install Consul template configuration file for secret page..."
-sudo bash -c "cat >/etc/systemd/system/consul-template.d/consul-template.json" << EOF
+bash -c "cat >/etc/systemd/system/consul-template.d/consul-template.json" << EOF
 
 consul {
   address = "127.0.0.1:8500"
@@ -219,7 +219,7 @@ sleep 5
 
 
 
-bash -c "/usr/local/bin/token_mgmt.sh" << TOKEN_MGMT
+bash -c "cat >/usr/local/bin/token_mgmt.sh" << TOKEN_MGMT
 #!/usr/bin/env bash
 
 set -e
@@ -250,7 +250,7 @@ chmod +x /usr/local/bin/token_mgmt.sh
 
 
 
-bash -c "/lib/systemd/system/token_mgmt.service" << TOKEN_MGMT_SVC
+bash -c "cat >/lib/systemd/system/token_mgmt.service" << TOKEN_MGMT_SVC
 [Unit]
 Description=Token Management script for Vault & Consul-template
 
@@ -261,7 +261,7 @@ User=root
 Group=root
 TOKEN_MGMT_SVC
 
-bash -c "/lib/systemd/system/token_mgmt.timer" << TOKEN_MGMT_TIMER
+bash -c "cat >/lib/systemd/system/token_mgmt.timer" << TOKEN_MGMT_TIMER
 [Unit]
 Description=Runs token_mgmt.sh once a minute
 
@@ -279,7 +279,7 @@ TOKEN_MGMT_TIMER
 systemctl start token_mgmt.timer
 systemctl enable token_mgmt.timer
 
-bash -c "/tmp/token_fetcher.sh" << TOKEN_FETCHER
+bash -c "cat >/tmp/token_fetcher.sh" << TOKEN_FETCHER
 #!/bin/bash
 
 set -e

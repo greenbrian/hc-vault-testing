@@ -1,3 +1,5 @@
+variable "atlas_token" {}
+
 output "nginx_addresses" {
   value = "${module.nginx.nginx_addresses}"
 }

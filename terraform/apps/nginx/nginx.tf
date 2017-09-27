@@ -1,6 +1,3 @@
-variable "user" {}
-variable "priv_key" {}
-variable "primary_consul" {}
 variable "nginx_server_count" {}
 variable "subnet_id" {}
 variable "hcvt_sg_id" {}

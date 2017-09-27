@@ -1,6 +1,3 @@
-variable "user" {}
-variable "priv_key" {}
-variable "primary_consul" {}
 variable "subnet_id" {}
 variable "hcvt_sg_id" {}
 
@@ -42,5 +39,5 @@ resource "aws_iam_role_policy" "consul-haproxy" {
 
 resource "aws_iam_instance_profile" "consul-haproxy" {
   name = "consul-haproxy"
-  role = "${aws_iam_role.consul-vault.id}"
+  role = "${aws_iam_role.consul-haproxy.id}"
 }

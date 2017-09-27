@@ -1,4 +1,3 @@
-variable "user" {}
 variable "subnet_id" {}
 variable "hcvt_sg_id" {}
 

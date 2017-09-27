@@ -15,16 +15,14 @@ data "terraform_remote_state" "hcvt_consul_vault" {
 }
 
 module "haproxy" {
-  source         = "./haproxy"
-  primary_consul = "${data.terraform_remote_state.hcvt_consul_vault.primary_consul}"
-  subnet_id      = "${data.terraform_remote_state.hcvt_consul_vault.subnet_id}"
-  hcvt_sg_id     = "${data.terraform_remote_state.hcvt_consul_vault.hcvt_sg_id}"
+  source     = "./haproxy"
+  subnet_id  = "${data.terraform_remote_state.hcvt_consul_vault.subnet_id}"
+  hcvt_sg_id = "${data.terraform_remote_state.hcvt_consul_vault.hcvt_sg_id}"
 }
 
 module "nginx" {
   source             = "./nginx"
   nginx_server_count = 4
-  primary_consul     = "${data.terraform_remote_state.hcvt_consul_vault.primary_consul}"
   subnet_id          = "${data.terraform_remote_state.hcvt_consul_vault.subnet_id}"
   hcvt_sg_id         = "${data.terraform_remote_state.hcvt_consul_vault.hcvt_sg_id}"
 }

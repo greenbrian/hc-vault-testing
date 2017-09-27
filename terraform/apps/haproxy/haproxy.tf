@@ -21,34 +21,26 @@ resource "aws_instance" "haproxy" {
     env = "hcvt-demo"
   }
 
-  connection {
-    user        = "${var.user}"
-    private_key = "${var.priv_key}"
-  }
+  iam_instance_profile = "${aws_iam_instance_profile.consul-haproxy.id}"
+  user_data            = "${data.template_file.haproxy-setup.rendered}"
+}
 
-  provisioner "remote-exec" {
-    inline = [
-      "echo ${var.primary_consul} > /tmp/consul-server-addr",
-    ]
-  }
+data "template_file" "haproxy-setup" {
+  template = "${file("${path.module}/haproxy.tpl")}"
+}
 
-  provisioner "remote-exec" {
-    scripts = [
-      "${path.module}/scripts/install.sh",
-    ]
-  }
+resource "aws_iam_role" "consul-haproxy" {
+  name               = "consul-self-assemble"
+  assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
+}
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo systemctl enable consul.service",
-      "sudo systemctl start consul",
-    ]
-  }
+resource "aws_iam_role_policy" "consul-haproxy" {
+  name   = "SelfAssembly"
+  role   = "${aws_iam_role.consul-haproxy.id}"
+  policy = "${data.aws_iam_policy_document.consul-haproxy.json}"
+}
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo systemctl enable consul-template.service",
-      "sudo systemctl start consul-template",
-    ]
-  }
+resource "aws_iam_instance_profile" "consul-haproxy" {
+  name = "consul-haproxy"
+  role = "${aws_iam_role.consul-vault.id}"
 }

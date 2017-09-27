@@ -3,13 +3,14 @@ provider "aws" {
 }
 
 provider "atlas" {
-    token = "${var.atlas_token}"
+  token = "${var.atlas_token}"
 }
 
 data "terraform_remote_state" "hcvt_consul_vault" {
   backend = "atlas"
+
   config {
-    name = "bgreen/hcvt-consul-vault"
+    name = "briangreen/hcvt-consul-vault-beta"
   }
 }
 

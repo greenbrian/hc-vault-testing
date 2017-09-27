@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-# Read from the file we created
-CONSUL_JOIN=$(cat /tmp/consul-server-addr | tr -d '\n')
-
-sudo bash -c "cat >/etc/default/consul" << EOF
+bash -c "cat >/etc/default/consul" << EOF
 CONSUL_FLAGS="\
--join=${CONSUL_JOIN} \
--data-dir=/opt/consul/data"
+-retry-join-ec2-tag-key=env \
+-retry-join-ec2-tag-value=hcvt-demo \
+-data-dir=/opt/consul/data "
 EOF
 
-sudo chown root:root /etc/default/consul
-sudo chmod 0644 /etc/default/consul
+chown root:root /etc/default/consul
+chmod 0644 /etc/default/consul
 
 # register services and checks in consul
-sudo bash -c "cat >/etc/systemd/system/consul.d/haproxy.json" << HAPROXY
+bash -c "cat >/etc/systemd/system/consul.d/haproxy.json" << HAPROXY
 {"service": {
   "name": "haproxy",
   "tags": ["web"],
@@ -41,7 +39,7 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/haproxy.json" << HAPROXY
 }
 HAPROXY
 
-sudo bash -c "cat >/etc/systemd/system/consul.d/haproxy-ssl.json" << HAPROXY-SSL
+bash -c "cat >/etc/systemd/system/consul.d/haproxy-ssl.json" << HAPROXY-SSL
 {"service": {
   "name": "haproxy-ssl",
   "tags": ["web"],
@@ -69,7 +67,7 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/haproxy-ssl.json" << HAPROXY-SSL
 HAPROXY-SSL
 
 
-sudo bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
+bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
 {
     "checks": [
       {
@@ -94,10 +92,15 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
 SYSTEM
 
 new_hostname=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-sudo hostname $new_hostname
-sudo bash -c "cat >>/etc/hosts" << HOSTS
+hostname $${new_hostname}
+bash -c "cat >>/etc/hosts" << HOSTS
 127.0.1.1 $new_hostname
 HOSTS
-sudo bash -c "cat >>/etc/hosts" << NEWHOSTNAME
-$new_hostname
+bash -c "cat >>/etc/hosts" << NEWHOSTNAME
+$${new_hostname}
 NEWHOSTNAME
+
+systemctl enable consul.service
+systemctl start consul
+systemctl enable consul-template.service
+systemctl start consul-template

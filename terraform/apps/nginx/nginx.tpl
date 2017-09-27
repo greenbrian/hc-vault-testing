@@ -170,7 +170,7 @@ sudo bash -c "cat >/etc/systemd/system/consul-template.d/templates/cert.ctmpl" <
 CERT
 
 
-sudo chmod +x /etc/systemd/system/consul-template.d/cert.ctmpl
+sudo chmod +x /etc/systemd/system/consul-template.d/templates/cert.ctmpl
 
 echo "Install Consul template configuration file for secret page..."
 sudo bash -c "cat >/etc/systemd/system/consul-template.d/consul-template.json" << EOF

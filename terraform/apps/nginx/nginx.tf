@@ -29,7 +29,7 @@ data "template_file" "nginx-setup" {
 }
 
 resource "aws_iam_role" "consul-nginx" {
-  name               = "consul-self-assemble"
+  name               = "consul-nginx-self-assemble"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 

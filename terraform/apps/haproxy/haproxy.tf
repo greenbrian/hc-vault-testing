@@ -27,7 +27,7 @@ data "template_file" "haproxy-setup" {
 }
 
 resource "aws_iam_role" "consul-haproxy" {
-  name               = "consul-self-assemble"
+  name               = "consul-haproxy-self-assemble"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 

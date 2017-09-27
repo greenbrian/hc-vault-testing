@@ -41,5 +41,5 @@ resource "aws_iam_role_policy" "consul-nginx" {
 
 resource "aws_iam_instance_profile" "consul-nginx" {
   name = "consul-nginx"
-  role = "${aws_iam_role.consul-vault.id}"
+  role = "${aws_iam_role.consul-nginx.id}"
 }

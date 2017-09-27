@@ -228,7 +228,7 @@ role_id_path="/tmp/role_id"
 secret_id_path="/tmp/secret_id"
 client_token_path="/ramdisk/client_token"
 
-if [ -s "$client_token_path" ]; then
+if [ -s "$${client_token_path}" ]; then
   echo "$0 - Token exists"
   exit 0
 else
@@ -241,7 +241,7 @@ else
   -d '{"role_id":"'"$(cat $role_id_path)"'","secret_id":"'"$(cat $secret_id_path)"'"}' \
   $vault_addr/v1/auth/approle/login |  \
   jq --raw-output '.auth.client_token' )
-  echo "VAULT_TOKEN=${client_token}" > $client_token_path
+  echo "VAULT_TOKEN=$${client_token}" > $${client_token_path}
   exit 0
 fi
 TOKEN_MGMT

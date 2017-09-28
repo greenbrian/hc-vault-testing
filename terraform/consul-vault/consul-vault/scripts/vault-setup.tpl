@@ -70,17 +70,19 @@ if [ ! $(cget root-token) ]; then
   echo "Remove master keys from disk"
   #shred /tmp/vault.init
 
-  #echo "Setup Vault demo"
-  #curl -fX PUT 127.0.0.1:8500/v1/kv/service/nodejs/show_vault -d "true"
-  #curl -fX PUT 127.0.0.1:8500/v1/kv/service/nodejs/vault_files -d "aws.html,generic.html"
+  logger "$0 - Unsealing Vault"
+  vault unseal $(cget unseal-key-1)
+  vault unseal $(cget unseal-key-2)
+  vault unseal $(cget unseal-key-3)
 else
   logger "$0 - Vault already initialized"
+  sleep 10
+  logger "$0 - Unsealing Vault"
+  vault unseal $(cget unseal-key-1)
+  vault unseal $(cget unseal-key-2)
+  vault unseal $(cget unseal-key-3)
 fi
 
-logger "$0 - Unsealing Vault"
-vault unseal $(cget unseal-key-1)
-vault unseal $(cget unseal-key-2)
-vault unseal $(cget unseal-key-3)
 
 logger "$0 - Vault setup complete"
 sleep 25s

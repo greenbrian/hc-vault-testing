@@ -219,7 +219,7 @@ sleep 5
 
 
 
-bash -c "cat >/usr/local/bin/token_mgmt.sh" << TOKEN_MGMT
+bash -c "cat >/usr/local/bin/token_mgmt.sh" << 'TOKEN_MGMT'
 #!/usr/bin/env bash
 
 set -e
@@ -250,7 +250,7 @@ chmod +x /usr/local/bin/token_mgmt.sh
 
 
 
-bash -c "cat >/lib/systemd/system/token_mgmt.service" << TOKEN_MGMT_SVC
+bash -c "cat >/lib/systemd/system/token_mgmt.service" << 'TOKEN_MGMT_SVC'
 [Unit]
 Description=Token Management script for Vault & Consul-template
 
@@ -261,7 +261,7 @@ User=root
 Group=root
 TOKEN_MGMT_SVC
 
-bash -c "cat >/lib/systemd/system/token_mgmt.timer" << TOKEN_MGMT_TIMER
+bash -c "cat >/lib/systemd/system/token_mgmt.timer" << 'TOKEN_MGMT_TIMER'
 [Unit]
 Description=Runs token_mgmt.sh once a minute
 
@@ -279,7 +279,7 @@ TOKEN_MGMT_TIMER
 systemctl start token_mgmt.timer
 systemctl enable token_mgmt.timer
 
-bash -c "cat >/tmp/token_fetcher.sh" << TOKEN_FETCHER
+bash -c "cat >/tmp/token_fetcher.sh" << 'TOKEN_FETCHER'
 #!/bin/bash
 
 set -e
@@ -292,7 +292,7 @@ set -e
 # secret_id being retrieved/embedded by an orchestration tool
 
 
-cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$${1}raw"; }
+cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1raw"; }
 
 cget role_id > /tmp/role_id
 cget secret_id > /tmp/secret_id

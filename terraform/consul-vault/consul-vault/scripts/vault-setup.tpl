@@ -51,6 +51,9 @@ RootCAName="vault-ca-root"
 IntermCAName="vault-ca-intermediate"
 mkdir -p /tmp/certs/
 
+# adding a splay with 45s max
+sleep $((RANDOM % 45))
+
 cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 
 if [ ! $(cget root-token) ]; then

@@ -69,7 +69,11 @@ if [ ! $(cget root-token) ]; then
 
   export ROOT_TOKEN=$(grep 'Root' /tmp/vault.init | awk '{print $4}')
   curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/root-token -d $${ROOT_TOKEN}
-
+  
+  # write some example consul kv
+  curl -fX PUT 127.0.0.1:8500/v1/kv/app/color/favorite -d BLUE
+  curl -fX PUT 127.0.0.1:8500/v1/kv/app/number/huge -d 99999
+  
   echo "Remove master keys from disk"
   #shred /tmp/vault.init
 

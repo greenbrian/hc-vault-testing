@@ -156,6 +156,9 @@ bash -c "cat >/etc/systemd/system/consul-template.d/templates/secret.html.ctmpl"
   <body>
       <h1>User1 SSN is <i>{{.Data.User1SSN}}</i></h1>
       <h1>User2 SSN is <i>{{.Data.User2SSN}}</i></h1>
+      
+      <h2>My favorite color is {{key "app/color/favorite"}}</h2>
+      <h2>Here is a small number: {{key "app/number/small"}}</h2>
   </body>
   </html>
 {{end}}

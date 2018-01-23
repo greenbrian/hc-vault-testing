@@ -4,14 +4,14 @@ variable "primary_consul" {}
 variable "subnet_id" {}
 variable "hcvt_sg_id" {}
 
-data "atlas_artifact" "haproxy" {
-  name  = "bgreen/hcvt-haproxy"
-  type  = "amazon.image"
-  build = "latest"
+data aws_ami "consul-vault" {
+  most_recent = true
+  owners      = ["self"]
+  name_regex  = "ubuntu-16-haproxy*"
 }
 
 resource "aws_instance" "haproxy" {
-  ami                    = "${data.atlas_artifact.haproxy.metadata_full.region-us-east-1}"
+  ami                    = "${data.aws_ami.haproxy.id}"
   instance_type          = "t2.micro"
   count                  = "1"
   subnet_id              = "${var.subnet_id}"

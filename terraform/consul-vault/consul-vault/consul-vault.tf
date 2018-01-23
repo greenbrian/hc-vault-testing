@@ -4,14 +4,14 @@ variable "consul_server_count" {}
 variable "subnet_id" {}
 variable "hcvt_sg_id" {}
 
-data "atlas_artifact" "consul-vault" {
-  name  = "bgreen/hcvt-consul-vault"
-  type  = "amazon.image"
-  build = "latest"
+data aws_ami "consul-vault" {
+  most_recent = true
+  owners      = ["self"]
+  name_regex  = "ubuntu-16-consul-vault*"
 }
 
 resource "aws_instance" "consul-vault" {
-  ami                    = "${data.atlas_artifact.consul-vault.metadata_full.region-us-east-1}"
+  ami                    = "${data.aws_ami.consul-vault.id}"
   instance_type          = "t2.micro"
   count                  = "${var.consul_server_count}"
   subnet_id              = "${var.subnet_id}"

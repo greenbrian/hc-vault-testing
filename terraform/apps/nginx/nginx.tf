@@ -2,14 +2,14 @@ variable "nginx_server_count" {}
 variable "subnet_id" {}
 variable "hcvt_sg_id" {}
 
-data "atlas_artifact" "nginx" {
-  name  = "bgreen/hcvt-nginx"
-  type  = "amazon.image"
-  build = "latest"
+data aws_ami "nginx" {
+  most_recent = true
+  owners      = ["self"]
+  name_regex  = "ubuntu-16-nginx*"
 }
 
 resource "aws_instance" "nginx" {
-  ami                    = "${data.atlas_artifact.nginx.metadata_full.region-us-east-1}"
+  ami                    = "${data.aws_ami.nginx.id}"
   instance_type          = "t2.micro"
   count                  = "${var.nginx_server_count}"
   subnet_id              = "${var.subnet_id}"

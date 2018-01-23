@@ -6,8 +6,7 @@ sudo bash -c "cat >/etc/default/consul" << EOF
 CONSUL_FLAGS="\
 -server \
 -bootstrap-expect=3 \
--retry-join-ec2-tag-key=env \
--retry-join-ec2-tag-value=hcvt-demo \
+-retry-join "provider=aws tag_key=env tag_value=hcvt-demo" \
 -data-dir=/opt/consul/data \
 -client 0.0.0.0 -ui"
 EOF

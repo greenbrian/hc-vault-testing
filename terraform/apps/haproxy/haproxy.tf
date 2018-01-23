@@ -4,7 +4,7 @@ variable "primary_consul" {}
 variable "subnet_id" {}
 variable "hcvt_sg_id" {}
 
-data aws_ami "consul-vault" {
+data aws_ami "haproxy" {
   most_recent = true
   owners      = ["self"]
   name_regex  = "ubuntu-16-haproxy*"

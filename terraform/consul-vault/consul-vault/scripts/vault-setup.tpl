@@ -4,10 +4,10 @@ set -e
 sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
 {
     "server": true,
-    "bootstrap-expect": 3,
+    "bootstrap_expect": 3,
     "datacenter": "dc1",
     "data_dir": "/opt/consul/data",
-    "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
+    "retry_join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
 }
 EOF
 chmod 0644 /etc/consul.d/consul.json

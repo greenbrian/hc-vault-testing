@@ -8,7 +8,7 @@ sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
 {
     "datacenter": "dc1",
     "data_dir": "/opt/consul/data",
-    "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
+    "retry_join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
 }
 EOF
 chmod 0644 /etc/consul.d/consul.json

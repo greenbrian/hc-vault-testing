@@ -4,6 +4,7 @@ set -e
 sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
 {
     "server": true,
+    "ui": true,
     "bootstrap_expect": 3,
     "datacenter": "dc1",
     "data_dir": "/opt/consul/data",

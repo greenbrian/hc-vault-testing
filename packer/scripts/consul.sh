@@ -10,8 +10,7 @@ unzip -q consul.zip >/dev/null
 chmod +x consul
 sudo mv consul /usr/local/bin/consul
 sudo mkdir -p /opt/consul/data
-sudo mkdir -p /etc/systemd/system/consul.d
-sudo mkdir -p
+sudo mkdir -p /etc/consul.d/
 
 
 echo "Configuring Consul firewall rules..."
@@ -31,7 +30,7 @@ After=network-online.target
 
 [Service]
 Restart=on-failure
-ExecStart=/usr/local/bin/consul agent -config-dir=/etc/systemd/system/consul.d
+ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
 

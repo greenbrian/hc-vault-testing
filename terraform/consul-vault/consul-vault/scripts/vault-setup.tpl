@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-sudo bash -c "cat >/etc/systemd/system/consul.d/consul.json" << EOF
+sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
 {
     "server": true,
     "bootstrap-expect": 3,

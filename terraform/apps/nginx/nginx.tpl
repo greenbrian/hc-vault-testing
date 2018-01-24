@@ -4,15 +4,14 @@ set -e
 mkdir /ramdisk
 mount -t tmpfs -o size=20M,mode=700 tmpfs /ramdisk
 
-bash -c "cat >/etc/default/consul" << EOF
-CONSUL_FLAGS="\
--retry-join-ec2-tag-key=env \
--retry-join-ec2-tag-value=hcvt-demo \
--data-dir=/opt/consul/data "
+sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
+{
+    "datacenter": "dc1",
+    "data_dir": "/opt/consul/data"
+    "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
+}
 EOF
-
-chown root:root /etc/default/consul
-chmod 0644 /etc/default/consul
+chmod 0644 /etc/consul.d/consul.json
 
 echo "Configuring Vault environment..."
 bash -c "cat >/etc/profile.d/vault.sh" << 'VAULTENV'
@@ -52,7 +51,7 @@ bash -c "cat >/var/www/html/index.nginx-debian.html" << EOF
 EOF
 
 # register services and checks in consul
-bash -c "cat >/etc/systemd/system/consul.d/nginx.json" << NGINX
+bash -c "cat >/etc/consul.d/nginx.json" << NGINX
 {"service": {
   "name": "nginx",
   "tags": ["web"],
@@ -79,7 +78,7 @@ bash -c "cat >/etc/systemd/system/consul.d/nginx.json" << NGINX
 }
 NGINX
 
-bash -c "cat >/etc/systemd/system/consul.d/nginx-ssl.json" << NGINX-SSL
+bash -c "cat >/etc/nginx-ssl.json" << NGINX-SSL
 {"service": {
   "name": "nginx-ssl",
   "tags": ["web"],
@@ -106,7 +105,7 @@ bash -c "cat >/etc/systemd/system/consul.d/nginx-ssl.json" << NGINX-SSL
 }
 NGINX-SSL
 
-bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
+bash -c "cat >/etc/consul.d/system.json" << SYSTEM
 {
     "checks": [
       {

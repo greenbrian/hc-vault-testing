@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-bash -c "cat >/etc/default/consul" << EOF
-CONSUL_FLAGS="\
--retry-join-ec2-tag-key=env \
--retry-join-ec2-tag-value=hcvt-demo \
--data-dir=/opt/consul/data "
+sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
+{
+    "datacenter": "dc1",
+    "data_dir": "/opt/consul/data"
+    "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
+}
 EOF
-
-chown root:root /etc/default/consul
-chmod 0644 /etc/default/consul
+chmod 0644 /etc/consul.d/consul.json
 
 # register services and checks in consul
-bash -c "cat >/etc/systemd/system/consul.d/haproxy.json" << HAPROXY
+bash -c "cat >/etc/consul.d/haproxy.json" << HAPROXY
 {"service": {
   "name": "haproxy",
   "tags": ["web"],
@@ -39,7 +38,7 @@ bash -c "cat >/etc/systemd/system/consul.d/haproxy.json" << HAPROXY
 }
 HAPROXY
 
-bash -c "cat >/etc/systemd/system/consul.d/haproxy-ssl.json" << HAPROXY-SSL
+bash -c "cat >/etc/consul.d/haproxy-ssl.json" << HAPROXY-SSL
 {"service": {
   "name": "haproxy-ssl",
   "tags": ["web"],
@@ -67,7 +66,7 @@ bash -c "cat >/etc/systemd/system/consul.d/haproxy-ssl.json" << HAPROXY-SSL
 HAPROXY-SSL
 
 
-bash -c "cat >/etc/systemd/system/consul.d/system.json" << SYSTEM
+bash -c "cat >/etc/consul.d/system.json" << SYSTEM
 {
     "checks": [
       {

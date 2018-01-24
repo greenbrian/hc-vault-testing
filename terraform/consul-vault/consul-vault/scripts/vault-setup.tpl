@@ -6,7 +6,7 @@ sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
     "server": true,
     "bootstrap-expect": 3,
     "datacenter": "dc1",
-    "data_dir": "/opt/consul/data"
+    "data_dir": "/opt/consul/data",
     "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
 }
 EOF

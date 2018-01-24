@@ -7,7 +7,7 @@ mount -t tmpfs -o size=20M,mode=700 tmpfs /ramdisk
 sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
 {
     "datacenter": "dc1",
-    "data_dir": "/opt/consul/data"
+    "data_dir": "/opt/consul/data",
     "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
 }
 EOF

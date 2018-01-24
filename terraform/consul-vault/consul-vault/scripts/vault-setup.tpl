@@ -10,13 +10,11 @@ sudo bash -c "cat >/etc/systemd/system/consul.d/consul.json" << EOF
     "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
 }
 EOF
+chmod 0644 /etc/consul.d/consul.json
 
 # setup consul UI specific iptables rules
 sudo iptables -I INPUT -s 0/0 -p tcp --dport 8500 -j ACCEPT
 sudo iptables-save | sudo tee /etc/iptables.rules
-
-chown root:root /etc/default/consul
-chmod 0644 /etc/default/consul
 
 new_hostname=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
 # set the hostname (before starting consul and nomad)

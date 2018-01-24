@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-
-sudo bash -c "cat >/etc/default/consul" << EOF
-CONSUL_FLAGS="\
--server \
--bootstrap-expect=3 \
--retry-join "provider=aws tag_key=env tag_value=hcvt-demo" \
--data-dir=/opt/consul/data \
--client 0.0.0.0 -ui"
+sudo bash -c "cat >/etc/systemd/system/consul.d/consul.json" << EOF
+{
+    "server": true,
+    "bootstrap-expect": 3,
+    "datacenter": "dc1",
+    "data_dir": "/opt/consul/data"
+    "retry-join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
+}
 EOF
 
 # setup consul UI specific iptables rules

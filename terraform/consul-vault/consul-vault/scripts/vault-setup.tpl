@@ -8,6 +8,7 @@ sudo bash -c "cat >/etc/consul.d/consul.json" << EOF
     "bootstrap_expect": 3,
     "datacenter": "dc1",
     "data_dir": "/opt/consul/data",
+    "enable_script_checks": true,
     "client_addr": "0.0.0.0",
     "retry_join": ["provider=aws tag_key=env tag_value=hcvt-demo"]
 }

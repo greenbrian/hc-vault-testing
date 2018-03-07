@@ -22,7 +22,7 @@ module "haproxy" {
 
 module "nginx" {
   source             = "./nginx"
-  nginx_server_count = 4
+  nginx_server_count = 3
   subnet_id          = "${data.terraform_remote_state.hcvt_consul_vault.subnet_id}"
   hcvt_sg_id         = "${data.terraform_remote_state.hcvt_consul_vault.hcvt_sg_id}"
 }

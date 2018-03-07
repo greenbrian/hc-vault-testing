@@ -10,7 +10,7 @@ data "terraform_remote_state" "hcvt_consul_vault" {
   backend = "atlas"
 
   config {
-    name = "briangreen/hcvt-consul-vault-beta"
+    name = "briangreen/hcvt-consul-vault"
   }
 }
 
